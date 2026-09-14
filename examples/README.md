@@ -52,6 +52,15 @@ separable:
    the usual source: find the same harbour-wall corner or slipway edge in both,
    and read its coordinates off the georeferenced one.
 
+   **Copernicus Sentinel-2 is the one whose terms are verified here** — EU law
+   grants reproduction, distribution and modification, commercial use included,
+   requiring only the credit `Copernicus Sentinel data [Year]`. But it is **10 m
+   per pixel**, so a mark picked off it is good to about ±5 m, which on a 200 m
+   scene would be the largest term in your whole error budget — larger than
+   everything [LIMITATIONS.md](../docs/LIMITATIONS.md) prices. Good enough to
+   demonstrate the workflow; not a survey. Real control points want sub-metre
+   national aerial imagery, whose licence you must check per country.
+
 `images/MANIFEST.yaml` records the provenance of anything placed in `images/` —
 source URL, licence, attribution and a checksum — and the images themselves are
 **not committed**, for licence reasons. Add an entry before adding a file, and

@@ -29,6 +29,44 @@
 
 images: []
 
+# Verified licence terms for sources of ground-truth coordinates. An entry here
+# is a provider whose terms have been read first-hand, not a file. Adding an
+# image from one of these still needs its own `images:` entry with a checksum.
+ground_truth_sources:
+  - name: Copernicus Sentinel-2
+    page_url: https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice
+    licence: Copernicus Sentinel Data Legal Notice (EU law)
+    legal_basis: Regulation (EU) No 377/2014; Commission Delegated Regulation (EU) No 1159/2013
+    verified: 2026-09-14
+    resolution_m: 10
+    crs: EPSG:32630   # UTM zone varies with the scene
+    redistribute: true
+    commercial_use: true
+    attribution: "Copernicus Sentinel data [Year]"
+    attribution_if_modified: "Contains modified Copernicus Sentinel data [Year]"
+    # Art. 7 of Regulation 1159/2013 grants, in so far as lawful: reproduction,
+    # distribution, communication to the public, adaptation/modification and
+    # combination with other data, and any combination of those. Art. 8 sets the
+    # credit wording above. Arts. 3 and 9 disclaim all warranty, including
+    # suitability for purpose -- which for this library means the coordinates you
+    # read off it carry no accuracy guarantee whatsoever.
+    #
+    # CAVEAT, and it is the important one: 10 m per pixel. A control point picked
+    # off Sentinel-2 is good to perhaps half a pixel, so +/- 5 m -- which on a
+    # 200 m coastal scene would be the largest term in the whole error budget,
+    # swamping everything docs/LIMITATIONS.md prices. Fine for demonstrating the
+    # workflow; not a survey. For real control points use sub-metre national
+    # aerial imagery and check that country's licence separately.
+
+# Still to verify (WebSearch budget was exhausted before these were reached):
+#   - sub-metre open aerial imagery per country: USGS NAIP (US, ~0.6 m; usgs.gov
+#     blocks automated fetches, so read the terms by hand), and whatever the
+#     national equivalent is elsewhere.
+#   - a fixed-camera image with published intrinsics under a licence that permits
+#     redistribution. Expect non-commercial terms to dominate here; if none is
+#     found, the honest answer is that the user supplies their own image and this
+#     manifest records only what they fetched.
+
 # No real imagery is wired up yet; every example synthesises its pixels, which is
 # why they run anywhere with no downloads. The two halves a real example needs
 # are separable and have very different licence profiles:
