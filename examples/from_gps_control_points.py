@@ -15,11 +15,11 @@ from __future__ import annotations
 import numpy as np
 
 from cam2geo import (
+    SURFACES,
     CameraPose,
     CameraStation,
     GeodeticPlane,
     Lens,
-    Surface,
     anchor_pixel,
     fit_homography,
     position_error,
@@ -84,7 +84,8 @@ def main() -> None:
                             curvature=True)
 
     # 5. Price it. A sea state with about half a metre of swell uncertainty.
-    surface = Surface("sea", offset_sigma_m=0.5, roughness_m=0.3, curvature=True)
+    # The preset, adapted to the day: calmer than its default half-metre swell.
+    surface = SURFACES["sea"].but(roughness_m=0.3)
     budget = position_error(station, anchors[:, 0], anchors[:, 1], surface,
                             pixel_sigma_px=1.0, pointing_sigma_deg=0.05,
                             control_rms_px=fit.rms_px, corrected_curvature=True)

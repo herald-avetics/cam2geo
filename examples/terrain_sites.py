@@ -28,6 +28,7 @@ import numpy as np
 import pymap3d
 
 from cam2geo import (
+    SURFACES,
     CameraPose,
     CameraStation,
     Lens,
@@ -74,7 +75,7 @@ SITES = [
         # Dyke intersections on a roughly 200 m pond grid.
         marks_m=np.array([[-90.0, 210.0], [0.0, 205.0], [95.0, 215.0],
                           [-150.0, 420.0], [10.0, 415.0], [150.0, 425.0]]),
-        surface=Surface("salt_flat", roughness_m=0.05),
+        surface=SURFACES["salt_flat"],
         target_height_m=0.0,
         rows=np.array([531.0, 450.0, 417.0, 399.0]),
     ),
@@ -87,8 +88,8 @@ SITES = [
         marks_m=np.array([[-85.0, 165.0], [85.0, 160.0], [-150.0, 330.0],
                           [150.0, 340.0], [0.0, 250.0], [240.0, 520.0]]),
         # Engineered flat. What breaks the plane is what is stacked on it.
-        surface=Surface("yard", roughness_m=0.03, offset_m=2.6,
-                        offset_sigma_m=0.4),
+        # A stack is 2.6 m to its top castings, known to about 0.4 m.
+        surface=SURFACES["container_yard"].but(offset_m=2.6, offset_sigma_m=0.4),
         target_height_m=2.6,      # a container's top corner castings
         rows=np.array([660.0, 428.0, 344.0, 297.0]),
     ),
@@ -100,8 +101,7 @@ SITES = [
         height_m=30.0, tilt_deg=8.0, focal_px=1400.0,
         marks_m=np.array([[-170.0, 300.0], [170.0, 310.0], [-330.0, 620.0],
                           [330.0, 640.0], [0.0, 450.0], [500.0, 980.0]]),
-        surface=Surface("sea", offset_m=0.8, offset_sigma_m=0.5,
-                        roughness_m=0.4, curvature=True),
+        surface=SURFACES["sea"].but(offset_m=0.8, roughness_m=0.4),
         target_height_m=0.8,      # mean swell lifting the waterline
         rows=np.array([554.0, 438.0, 397.0, 374.0]),
     ),

@@ -209,13 +209,17 @@ range that costs metres.
 ## Surface and position_error: filling in the numbers
 
 This is the part with no right answer in the library, because every input
-describes *your* site. Each preset in `SURFACES` is a starting point to be
+describes *your* site. The eight presets in `SURFACES` — `sea`, `tidal_flat`,
+`salt_flat`, `moorland`, `runway`, `container_yard`, `pitch`, `warehouse_floor`
+— are starting points to be
 replaced, not a constant to be trusted.
 
 ```python
 from cam2geo import SURFACES, Surface, position_error
 
 surface = SURFACES["sea"].but(offset_m=0.8, offset_sigma_m=0.4)
+# .but() is how a preset meets a site, and every example uses it. No preset
+# carries an offset_m: what sits on a surface belongs to the job, not the terrain.
 budget = position_error(station, u, v, surface,
                         pixel_sigma_px=1.0,
                         pointing_sigma_deg=0.05,

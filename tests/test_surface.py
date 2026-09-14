@@ -52,8 +52,22 @@ class TestSurface:
         """A sanity check on the numbers, not on the physics."""
         assert (SURFACES["warehouse_floor"].roughness_m
                 < SURFACES["runway"].roughness_m
+                <= SURFACES["container_yard"].roughness_m
+                < SURFACES["salt_flat"].roughness_m
+                < SURFACES["tidal_flat"].roughness_m
                 < SURFACES["sea"].roughness_m
                 <= SURFACES["moorland"].roughness_m)
+
+    def test_no_preset_assumes_a_target_height(self):
+        """What sits on a surface is a property of the job, not the terrain --
+        a yard's cargo and the sea's swell are both set per site with .but()."""
+        for key, surface in SURFACES.items():
+            assert surface.offset_m == 0.0, key
+
+    def test_every_terrain_the_examples_name_has_a_preset(self):
+        """examples/terrain_sites.py must not hand-roll a Surface it could reuse."""
+        for key in ("salt_flat", "container_yard", "sea"):
+            assert key in SURFACES
 
 
 class TestPositionError:

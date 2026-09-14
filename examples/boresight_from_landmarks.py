@@ -22,11 +22,11 @@ from __future__ import annotations
 import numpy as np
 
 from cam2geo import (
+    SURFACES,
     CameraPose,
     CameraStation,
     Lens,
     MetricPlane,
-    Surface,
     align_pixels,
     position_error,
 )
@@ -116,7 +116,7 @@ def main() -> None:
     # The payoff is not only the metres removed. Drift you cannot measure has to
     # be *budgeted* for, as pointing_sigma_deg; drift you can measure is removed
     # and only the alignment residual is left to budget.
-    sea = Surface("sea", offset_sigma_m=0.5, roughness_m=0.3, curvature=True)
+    sea = SURFACES["sea"].but(roughness_m=0.3)
     u, v = DETECTIONS[:, 0], DETECTIONS[:, 1]
     print(f"\n{'detection':>12} {'range m':>9} {'unmeasured':>11} {'boresighted':>12}")
     guessed = position_error(autumn, u, v, sea, pointing_sigma_deg=0.5,

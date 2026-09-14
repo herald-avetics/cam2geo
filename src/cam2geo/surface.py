@@ -58,8 +58,12 @@ class Surface:
 SURFACES: dict[str, Surface] = {
     "sea": Surface("sea", offset_sigma_m=0.5, roughness_m=0.5, curvature=True),
     "tidal_flat": Surface("tidal_flat", offset_sigma_m=0.1, roughness_m=0.1),
+    "salt_flat": Surface("salt_flat", roughness_m=0.05),
     "moorland": Surface("moorland", roughness_m=1.0),
     "runway": Surface("runway", roughness_m=0.03),
+    # offset_m stays 0: what is stacked on a yard is a property of the job, not
+    # of the surface. Set it per site with .but(offset_m=...).
+    "container_yard": Surface("container_yard", roughness_m=0.03),
     "pitch": Surface("pitch", roughness_m=0.02),
     "warehouse_floor": Surface("warehouse_floor", roughness_m=0.005),
 }
