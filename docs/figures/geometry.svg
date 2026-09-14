@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" width="760" height="340"
+     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13">
+  <title>Side elevation: a camera above a plane, and where a pixel lands</title>
+
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3"
+            orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2f6f9f"/></marker>
+    <marker id="arrowdim" markerWidth="8" markerHeight="8" refX="7" refY="2.5"
+            orient="auto"><path d="M0,0 L0,5 L8,2.5 z" fill="#7b848c"/></marker>
+  </defs>
+
+  <!-- the plane -->
+  <line x1="40" y1="270" x2="730" y2="270" stroke="#3f8f5f" stroke-width="2.5"/>
+  <text x="46" y="291" fill="#3f8f5f">the plane: sea, moor, apron, floor</text>
+
+  <!-- mast and camera -->
+  <line x1="110" y1="270" x2="110" y2="96" stroke="#7b848c" stroke-width="3"/>
+  <rect x="96" y="78" width="34" height="22" rx="4" fill="#2f6f9f"/>
+  <text x="138" y="86" fill="#2f6f9f" font-weight="600">CameraStation</text>
+  <text x="138" y="103" fill="#7b848c">pose: height_m, x, y, tilt_deg, yaw_deg</text>
+
+  <!-- camera height dimension -->
+  <line x1="76" y1="96" x2="76" y2="270" stroke="#7b848c" stroke-width="1"
+        marker-start="url(#arrowdim)" marker-end="url(#arrowdim)"/>
+  <text x="20" y="188" fill="#7b848c">height_m</text>
+
+  <!-- horizontal reference and the optical axis -->
+  <line x1="110" y1="96" x2="700" y2="96" stroke="#b9c0c6" stroke-width="1"
+        stroke-dasharray="5 4"/>
+  <text x="620" y="90" fill="#b9c0c6">horizontal</text>
+  <path d="M110,96 L700,222" stroke="#7b848c" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="470" y="186" fill="#7b848c">optical axis</text>
+  <path d="M176,96 A66,66 0 0 1 172,110" fill="none" stroke="#7b848c"/>
+  <text x="184" y="116" fill="#7b848c">tilt_deg</text>
+
+  <!-- two rays: near and far -->
+  <line x1="110" y1="96" x2="300" y2="270" stroke="#2f6f9f" stroke-width="1.8"
+        marker-end="url(#arrow)"/>
+  <line x1="110" y1="96" x2="620" y2="270" stroke="#2f6f9f" stroke-width="1.8"
+        marker-end="url(#arrow)"/>
+
+  <circle cx="300" cy="270" r="5" fill="#2f6f9f"/>
+  <circle cx="620" cy="270" r="5" fill="#2f6f9f"/>
+  <text x="252" y="313" fill="#2f6f9f">a low pixel</text>
+  <text x="560" y="313" fill="#2f6f9f">a high pixel</text>
+
+  <!-- ground sample distance: a pixel covers more ground further out -->
+  <line x1="292" y1="256" x2="308" y2="256" stroke="#c2571a" stroke-width="4"/>
+  <line x1="566" y1="256" x2="674" y2="256" stroke="#c2571a" stroke-width="4"/>
+  <text x="230" y="248" fill="#c2571a">one pixel</text>
+  <text x="566" y="248" fill="#c2571a">the same one pixel</text>
+
+  <!-- the horizon, where the ray never lands -->
+  <line x1="110" y1="96" x2="730" y2="228" stroke="#a03030" stroke-width="1.4"
+        stroke-dasharray="6 4"/>
+  <text x="440" y="60" fill="#a03030" font-weight="600">above the horizon the ray
+    never meets the plane</text>
+  <text x="440" y="77" fill="#a03030">project() returns NaN, not the mirrored point</text>
+
+  <text x="40" y="26" font-size="15" font-weight="600" fill="#313a42">
+    CameraStation.project(u, v) -- one ray, one ground point</text>
+  <text x="40" y="44" fill="#7b848c">ground_m_per_px is the width of that orange
+    bar: it grows with range, without bound at the horizon</text>
+</svg>

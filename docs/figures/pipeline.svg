@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" width="760" height="330"
+     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12.5">
+  <title>The interfaces, and what flows between them</title>
+  <defs>
+    <marker id="p" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7b848c"/></marker>
+  </defs>
+
+  <text x="30" y="26" font-size="15" font-weight="600" fill="#313a42">
+    From four charted marks to a position, and what each step is called</text>
+
+  <!-- row 1: building the view -->
+  <rect x="30" y="48" width="150" height="52" rx="5" fill="#3f8f5f" opacity="0.14"
+        stroke="#3f8f5f"/>
+  <text x="44" y="70" fill="#3f8f5f" font-weight="600">ground control</text>
+  <text x="44" y="88" fill="#3f8f5f">4+ known points</text>
+
+  <line x1="180" y1="74" x2="228" y2="74" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <rect x="232" y="48" width="170" height="52" rx="5" fill="#2f6f9f" opacity="0.14"
+        stroke="#2f6f9f"/>
+  <text x="246" y="70" fill="#2f6f9f" font-weight="600">fit_homography()</text>
+  <text x="246" y="88" fill="#2f6f9f">-&gt; HomographyFit .rms_px</text>
+
+  <line x1="402" y1="74" x2="450" y2="74" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <rect x="454" y="48" width="180" height="52" rx="5" fill="#2f6f9f" opacity="0.14"
+        stroke="#2f6f9f"/>
+  <text x="468" y="70" fill="#2f6f9f" font-weight="600">PlaneHomography</text>
+  <text x="468" y="88" fill="#2f6f9f">+ Lens, + PlaneFrame</text>
+
+  <text x="646" y="66" fill="#7b848c" font-size="11">or build it from a</text>
+  <text x="646" y="80" fill="#7b848c" font-size="11">known pose:</text>
+  <text x="646" y="94" fill="#7b848c" font-size="11">CameraStation</text>
+  <text x="646" y="108" fill="#7b848c" font-size="11">.from_pose()</text>
+
+  <!-- row 2 -->
+  <line x1="544" y1="100" x2="544" y2="134" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <rect x="454" y="138" width="180" height="52" rx="5" fill="#2f6f9f" opacity="0.14"
+        stroke="#2f6f9f"/>
+  <text x="468" y="160" fill="#2f6f9f" font-weight="600">CameraStation</text>
+  <text x="468" y="178" fill="#2f6f9f">view + CameraPose</text>
+
+  <line x1="454" y1="164" x2="406" y2="164" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <rect x="232" y="138" width="170" height="52" rx="5" fill="#c2571a" opacity="0.14"
+        stroke="#c2571a"/>
+  <text x="246" y="160" fill="#c2571a" font-weight="600">.project(u, v)</text>
+  <text x="246" y="178" fill="#c2571a">target_height_m, curvature</text>
+
+  <line x1="232" y1="164" x2="184" y2="164" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <rect x="30" y="138" width="150" height="52" rx="5" fill="#c2571a" opacity="0.14"
+        stroke="#c2571a"/>
+  <text x="44" y="160" fill="#c2571a" font-weight="600">GroundPoints</text>
+  <text x="44" y="178" fill="#c2571a">x, y, valid, m_per_px</text>
+
+  <!-- inputs from detections -->
+  <rect x="232" y="210" width="170" height="46" rx="5" fill="#7b848c" opacity="0.12"
+        stroke="#7b848c"/>
+  <text x="246" y="230" fill="#5d666e" font-weight="600">anchor_pixel(boxes)</text>
+  <text x="246" y="247" fill="#5d666e">bottom_centre by default</text>
+  <line x1="317" y1="210" x2="317" y2="192" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <!-- error budget branch -->
+  <rect x="454" y="210" width="180" height="46" rx="5" fill="#7a5ea8" opacity="0.14"
+        stroke="#7a5ea8"/>
+  <text x="468" y="230" fill="#7a5ea8" font-weight="600">position_error()</text>
+  <text x="468" y="247" fill="#7a5ea8">+ Surface -&gt; ErrorBudget</text>
+  <line x1="544" y1="190" x2="544" y2="206" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <!-- masking branch -->
+  <rect x="30" y="210" width="150" height="46" rx="5" fill="#7b848c" opacity="0.12"
+        stroke="#7b848c"/>
+  <text x="44" y="230" fill="#5d666e" font-weight="600">.footprint()</text>
+  <text x="44" y="247" fill="#5d666e">.horizon_line</text>
+  <line x1="105" y1="190" x2="105" y2="206" stroke="#7b848c" marker-end="url(#p)"/>
+
+  <text x="30" y="288" fill="#7b848c" font-size="12">Everything above the second row
+    needs only numpy. fit_homography() and a Lens need OpenCV; GeodeticPlane needs
+    pymap3d.</text>
+  <text x="30" y="306" fill="#7b848c" font-size="12">Every projection returns one
+    point per pixel, and marks the ones it could not place rather than dropping
+    or guessing them.</text>
+</svg>

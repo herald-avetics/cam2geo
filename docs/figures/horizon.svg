@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" width="760" height="330"
+     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13">
+  <title>The vanishing line splits the frame, and only you know which half is ground</title>
+
+  <text x="30" y="26" font-size="15" font-weight="600" fill="#313a42">
+    horizon_line: the two halves are symmetric to the matrix</text>
+
+  <!-- left: the image -->
+  <rect x="30" y="46" width="330" height="200" rx="3" fill="none" stroke="#7b848c"
+        stroke-width="1.5"/>
+  <rect x="31" y="47" width="328" height="74" fill="#a03030" opacity="0.10"/>
+  <rect x="31" y="121" width="328" height="124" fill="#3f8f5f" opacity="0.12"/>
+  <line x1="30" y1="121" x2="360" y2="121" stroke="#a03030" stroke-width="2"/>
+  <text x="240" y="115" fill="#a03030" font-weight="600">horizon_line</text>
+  <text x="42" y="70" fill="#a03030">sky side: project() gives NaN</text>
+  <text x="42" y="88" fill="#a03030" opacity="0.8">beyond_horizon counts these</text>
+  <text x="42" y="238" fill="#3f8f5f">ground side: positions</text>
+
+  <circle cx="195" cy="80" r="5" fill="#a03030"/>
+  <text x="205" y="84" fill="#a03030">a pixel of sky</text>
+  <circle cx="195" cy="215" r="5" fill="#3f8f5f"/>
+  <text x="205" y="219" fill="#3f8f5f">ground_pixel (default)</text>
+  <text x="30" y="266" fill="#7b848c">the frame</text>
+
+  <!-- right: what the matrix does with each -->
+  <line x1="420" y1="150" x2="730" y2="150" stroke="#3f8f5f" stroke-width="2.5"/>
+  <text x="420" y="171" fill="#3f8f5f">the plane, seen from the side</text>
+  <circle cx="470" cy="72" r="9" fill="#2f6f9f"/>
+  <text x="446" y="62" fill="#2f6f9f">camera</text>
+
+  <line x1="470" y1="72" x2="660" y2="150" stroke="#3f8f5f" stroke-width="1.8"/>
+  <circle cx="660" cy="150" r="5" fill="#3f8f5f"/>
+  <text x="600" y="143" fill="#3f8f5f">the real point</text>
+
+  <line x1="470" y1="72" x2="300" y2="2" stroke="#a03030" stroke-width="1.4"
+        stroke-dasharray="5 4"/>
+  <line x1="470" y1="72" x2="430" y2="228" stroke="#a03030" stroke-width="1.4"/>
+  <circle cx="430" cy="228" r="5" fill="#a03030"/>
+  <text x="392" y="252" fill="#a03030" font-weight="600">the mirrored point</text>
+  <text x="392" y="270" fill="#a03030">finite, plausible, behind the camera</text>
+  <text x="392" y="288" fill="#7b848c">cv2.perspectiveTransform returns this,</text>
+  <text x="392" y="304" fill="#7b848c">with no error. cam2geo returns NaN.</text>
+
+  <text x="30" y="292" fill="#7b848c" font-size="12">Nothing in the matrix says which</text>
+  <text x="30" y="308" fill="#7b848c" font-size="12">half is ground: ground_pixel does.</text>
+</svg>

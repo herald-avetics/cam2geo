@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" width="760" height="320"
+     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13">
+  <title>The anchor, and the target that floats above the plane</title>
+
+  <text x="30" y="26" font-size="15" font-weight="600" fill="#313a42">
+    anchor_pixel(), and why the base of the box is the one that means something</text>
+
+  <!-- left panel: the box in the image -->
+  <rect x="30" y="50" width="300" height="210" rx="3" fill="none" stroke="#7b848c"
+        stroke-width="1.5"/>
+  <line x1="30" y1="92" x2="330" y2="92" stroke="#a03030" stroke-width="1.6"/>
+  <text x="252" y="86" fill="#a03030" font-size="12">horizon</text>
+
+  <rect x="140" y="120" width="80" height="86" fill="none" stroke="#2f6f9f"
+        stroke-width="2"/>
+  <circle cx="180" cy="163" r="5" fill="#c2571a"/>
+  <text x="192" y="158" fill="#c2571a">"centre"</text>
+  <circle cx="180" cy="206" r="5" fill="#3f8f5f"/>
+  <text x="192" y="224" fill="#3f8f5f">"bottom_centre"</text>
+  <text x="42" y="252" fill="#7b848c" font-size="12">a detection box</text>
+
+  <!-- right panel: the side view showing relief displacement -->
+  <line x1="380" y1="230" x2="740" y2="230" stroke="#3f8f5f" stroke-width="2.5"/>
+  <text x="380" y="251" fill="#3f8f5f">the fitted plane</text>
+
+  <circle cx="404" cy="70" r="9" fill="#2f6f9f"/>
+  <text x="380" y="60" fill="#2f6f9f">camera</text>
+  <line x1="392" y1="70" x2="392" y2="230" stroke="#7b848c" stroke-width="1"
+        stroke-dasharray="4 3"/>
+  <text x="336" y="152" fill="#7b848c" font-size="12">H</text>
+
+  <!-- the target: a body of height h sitting on the plane -->
+  <rect x="560" y="196" width="34" height="34" fill="#2f6f9f" opacity="0.25"
+        stroke="#2f6f9f"/>
+  <circle cx="577" cy="230" r="5" fill="#3f8f5f"/>
+  <text x="546" y="276" fill="#3f8f5f" font-size="12">its base: correct</text>
+
+  <!-- the ray through the centre lands further away -->
+  <line x1="404" y1="70" x2="577" y2="230" stroke="#3f8f5f" stroke-width="1.8"/>
+  <line x1="404" y1="70" x2="700" y2="230" stroke="#c2571a" stroke-width="1.8"
+        stroke-dasharray="6 4"/>
+  <circle cx="577" cy="213" r="4" fill="#c2571a"/>
+  <circle cx="700" cy="230" r="5" fill="#c2571a"/>
+  <text x="640" y="276" fill="#c2571a" font-size="12">where its centre lands</text>
+
+  <line x1="577" y1="246" x2="700" y2="246" stroke="#c2571a" stroke-width="1"/>
+  <text x="586" y="262" fill="#c2571a" font-size="12">error = r * h / H</text>
+
+  <line x1="606" y1="196" x2="606" y2="230" stroke="#7b848c" stroke-width="1"/>
+  <text x="614" y="216" fill="#7b848c" font-size="12">h</text>
+
+  <text x="30" y="292" fill="#7b848c" font-size="12">A target standing on the plane
+    meets it at its feet. Anything at height h -- swell under a hull, cargo on a
+    deck, the roof of a</text>
+  <text x="30" y="308" fill="#7b848c" font-size="12">vehicle -- lands too far away
+    by r*h/H. That is relief displacement; CameraStation.project(target_height_m=)
+    removes it.</text>
+</svg>

@@ -1,0 +1,59 @@
+[project]
+name = "cam2geo"
+version = "0.1.0"
+description = "Put a fixed camera's pixels on the ground, through a plane homography."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Herald" }]
+keywords = ["homography", "georeferencing", "photogrammetry", "ground-plane", "camera"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+# numpy alone. The projection path is linear algebra; everything below is a
+# feature you may not need, and none of it is imported until you use it.
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+lens = ["opencv-python-headless>=4.8"]   # undistortion and homography fitting
+geodetic = ["pymap3d>=3.0"]              # only for GeodeticPlane
+all = ["cam2geo[lens,geodetic]"]
+
+[dependency-groups]
+dev = [
+    "opencv-python-headless>=4.8",
+    "pymap3d>=3.0",
+    "scipy>=1.15",   # scipy.differentiate.jacobian, the oracle for our own
+    "pytest>=8",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+docs = ["matplotlib>=3.8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cam2geo"]
+
+[tool.ruff]
+line-length = 95
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+files = ["src/cam2geo"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

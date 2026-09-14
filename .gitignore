@@ -1,0 +1,13 @@
+# The global gitignore excludes docs/, but this project's docs are committed:
+# they carry the error budget, the interface reference and the figures.
+!docs/
+
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
