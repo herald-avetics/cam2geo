@@ -1,0 +1,43 @@
+# Provenance for every image used by an example.
+#
+# The images themselves are NOT committed -- this repository is MIT and cannot
+# redistribute third-party imagery whose terms it does not control. What is
+# committed is this file: where each image came from, under what licence, and a
+# checksum so a fetched copy can be shown to be the one described here.
+#
+# Add the entry before adding the file. `sha256` is of the bytes as served.
+#
+# Fields, all required:
+#   file         name under examples/images/
+#   description  what it shows, and why it is useful here
+#   source_url   the exact URL the bytes come from
+#   page_url     the human-readable page that states the terms
+#   licence      SPDX identifier where one exists, else the terms' own name
+#   attribution  the credit line the licence requires, verbatim
+#   redistribute true only if the licence permits us to ship the file itself
+#   retrieved    ISO date the URL was last confirmed
+#   sha256       checksum of the file as served
+#
+# For a georeferenced source (satellite or aerial imagery used to read off
+# control-point coordinates) also record:
+#   crs          coordinate reference system, e.g. EPSG:4326
+#   resolution_m ground sample distance of that product, in metres
+#
+# Anything marked `redistribute: false` must stay out of git. `.gitignore`
+# excludes this directory's contents apart from this file, so that is the
+# default and forgetting is safe.
+
+images: []
+
+# No real imagery is wired up yet; every example synthesises its pixels, which is
+# why they run anywhere with no downloads. The two halves a real example needs
+# are separable and have very different licence profiles:
+#
+#   1. A fixed camera's image. Intrinsics are a bonus, not a requirement --
+#      fit_homography needs none. Most computer-vision datasets that publish
+#      calibration are non-commercial, so check before adding one.
+#   2. Georeferenced imagery to read control-point coordinates from. Public
+#      domain and open options exist here; commercial basemap tiles (Google,
+#      Bing, Esri) generally forbid this use, so do not reach for them.
+#
+# See examples/README.md, "Using a real image".

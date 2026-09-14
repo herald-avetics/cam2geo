@@ -195,7 +195,96 @@ spread as independent when they are both radial, so the true combined radial
 error is somewhere between the quadrature sum and the linear one. And `total_m`
 is a one-sigma figure, not a confidence bound -- multiply it if you need one.
 
-## 7. The tables
+## 7. Negating an error
+
+There is only one move, and everything below is an instance of it:
+
+> **Measure a term and it becomes a bias, and a bias can be subtracted. Leave it
+> unmeasured and it stays random, and a random term can only be budgeted for.**
+
+That is why §6 splits the budget the way it does. The split is not bookkeeping:
+it is a list of which terms you can still do something about.
+
+| term | negatable? | what removes it |
+|---|---|---|
+| lens distortion | **fully** | `Lens` — a calibration, done once |
+| `height_bias_m` | **fully** | `project(target_height_m=)`, with `corrected_height=True` |
+| `curvature_m` | **fully** | `project(curvature=True, refraction_k=)`, with `corrected_curvature=True` |
+| `pointing_m` | **fully, and repeatedly** | `align_pixels` → `realigned` — §7.1 |
+| a uniform surface tilt | **fully, for free** | `fit_homography` absorbs it; correcting again double-counts |
+| `control_m` | reduce only | more marks, better spread, a better survey |
+| `roughness_m` | reduce only | fit a smaller area, or one plane per region |
+| `height_sigma_m` | reduce only | measure the tide or sea state — which converts part of it into a correctable `offset_m` |
+| `pixel_m` | reduce only | a better detector, a longer lens, a lower cutoff |
+
+The three "reduce only" rows are not failures of the library. They are genuinely
+random: they differ from frame to frame with no sign you can predict, so there is
+nothing to subtract. Note what the `height_sigma_m` row says, though — a tide
+gauge does not make the water flatter, it moves uncertainty into the bias column
+where it can be removed. That is the general move again.
+
+### 7.1 Boresighting: negating drift you did not know you had
+
+Pointing error is the interesting one, because it starts as a random term and
+does not have to stay one.
+
+A fitted homography records where the camera pointed **on the day it was
+fitted**. A gale moves the mast; a contractor leans a ladder on the bracket; the
+housing warms through the afternoon. Nothing about the stale matrix looks wrong
+from the inside — it still returns plausible positions, still reports good
+conditioning, and is now systematically wrong. `examples/boresight_from_landmarks.py`
+measures 92 m of error at 820 m range from a drift of about 0.6°.
+
+The correction needs **no survey and no coordinates**. Pick features that have not
+moved — a mooring, the corner of a sea wall, a chimney on the far shore — find
+them in the reference image and in today's, and the transform between the two
+*is* the drift:
+
+```python
+alignment = align_pixels(reference_px, current_px, lens=lens)
+station = station.realigned(alignment.transform)
+```
+
+Why it is exact rather than an approximation: a camera rotating about its optical
+centre induces exactly `K R K⁻¹` on the image, **whatever the depth of what it is
+looking at** -- the standard rotating-camera result, and the reason panoramas
+stitch at all. So landmarks on a distant hillside serve as well as ones on the
+water. `tests/test_align.py` recovers a known rotation from it to 1e-4 deg. If the camera also *shifted*, that is a homography
+only for points on one plane — so use landmarks on the ground plane, and pass
+`model="homography"`.
+
+**Constrain the model to what the camera can do.** A camera on a mount has three
+rotational freedoms. Estimating a general eight-parameter homography gives it
+five more, and clicking error flows straight into them — measured over 30 sets of
+clicks at half a pixel each, the eight-parameter fit's drift estimate has more
+than three times the spread of the constrained one, and it hides that noise in a
+*smaller* residual, so `rms_px` will not warn you. Hence `model="rotation"` is the
+default, and it resolves a hundredth of a degree where the wider model cannot.
+
+What you get back, and what to do with each:
+
+- `drift_deg` — how far it turned. Compare against a threshold to decide whether
+  to realign at all.
+- `rms_px` / `residual_deg` — what alignment could *not* explain. This is your new
+  `pointing_sigma_deg`: drift you have measured is gone, and only this is left to
+  budget for.
+- `inliers` — which landmarks agreed. The one that dropped out is the buoy that
+  dragged its mooring, and it is the check that stops a moving landmark being
+  mistaken for a moving camera.
+
+Two things it cannot do. It cannot detect drift that happened *before* the
+reference image — the reference defines "aligned", so an error already baked into
+the original fit is invisible to it, and only a re-survey finds that. And it
+cannot correct a camera whose **zoom or focus** changed, because that alters the
+intrinsics rather than the orientation: the residual will be large and the honest
+response is a new fit.
+
+In service this is a scheduled check rather than a response to a storm. Store the
+reference landmark pixels beside the homography — they cost nothing — re-measure
+daily, and realign when `drift_deg` rises above the noise floor your own landmarks
+give you. `residual_deg` from a calm day *is* that floor.
+
+## 8. The tables
 
 <!-- generated by docs/make_error_tables.py -- do not hand-edit -->
 
@@ -296,7 +385,7 @@ Dominant term by range:
 Read the last row of each table as a warning, not a result: past the conditioning
 cutoff every term explodes together and the position means nothing.
 
-## 8. What the model cannot represent at all
+## 9. What the model cannot represent at all
 
 - **Long-wavelength relief.** A plane is local. Moorland that looks flat over
   100 m is not flat over 1 km, and `roughness_m` prices the residual but does not

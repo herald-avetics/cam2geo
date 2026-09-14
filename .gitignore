@@ -11,3 +11,9 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Example imagery is fetched, never committed: the licences are not ours to
+# redistribute under. examples/images/MANIFEST.yaml records where each file
+# came from and is the only thing in there that is tracked.
+examples/images/*
+!examples/images/MANIFEST.yaml

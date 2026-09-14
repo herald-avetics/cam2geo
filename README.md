@@ -78,7 +78,7 @@ beautifully and extrapolate terribly.
 ```python
 fit = fit_homography(control_deg, control_px, 1920, 1080,
                      frame=GeodeticPlane(), method="exact")
-print(fit.rms_px, fit.max_px)      # 1.74 px, 2.96 px
+print(fit.rms_px, fit.max_px)      # 0.47 px, 0.66 px
 ```
 
 Read the residuals before anything else. They are the only honest signal you will
@@ -106,9 +106,9 @@ placed = station.project(anchors[:, 0], anchors[:, 1],
 
 ```
  box    longitude    latitude   range m     m/px    +/- m
-   0    -4.140023   50.350565      62.8    0.106      1.2
-   1    -4.139647   50.350832     100.2    0.236      2.0
-   2    -4.140560   50.351613     189.5    0.821      4.2
+   0    -4.140021   50.350566      62.9    0.105      1.2
+   1    -4.139646   50.350832     100.3    0.235      2.0
+   2    -4.140563   50.351616     189.9    0.828      4.0
    3           --          --   beyond the horizon
 ```
 
@@ -145,6 +145,33 @@ This is the part most pipelines skip, and it changes what you build:
 footprint comes back as a closed ring of ground coordinates you can plot straight
 onto a chart.
 
+**7. Keep it aligned**, with [`align_pixels`](docs/INTERFACE.md#align_pixels-and-realigned).
+This is the step most pipelines are missing. The matrix you fitted in step 2
+records where the camera pointed *that day*; a gale, a ladder against the bracket
+or a warm afternoon moves it, and nothing about the stale matrix looks wrong from
+the inside — it still returns plausible positions and still reports good
+conditioning.
+
+```python
+alignment = align_pixels(reference_px, current_px, lens=lens)
+station = station.realigned(alignment.transform)
+```
+
+The landmarks need **no coordinates** — a mooring, a sea-wall corner, a chimney
+on the far shore will do, as long as they have not moved. On the coastal setup,
+0.6° of drift is worth 92 m at 820 m range, and this removes it without a survey.
+See [`examples/boresight_from_landmarks.py`](examples/boresight_from_landmarks.py).
+
+## Examples
+
+| | |
+|---|---|
+| [`four_points.py`](examples/four_points.py) | The minimum: four known points in, world coordinates out |
+| [`from_gps_control_points.py`](examples/from_gps_control_points.py) | The same, done properly — anchors, budget, footprint, refusals |
+| [`boresight_from_landmarks.py`](examples/boresight_from_landmarks.py) | The camera got knocked. Measure the drift and remove it |
+
+More in [examples/README.md](examples/README.md).
+
 ## The interfaces
 
 ![The interfaces and what flows between them](docs/figures/pipeline.svg)
@@ -180,7 +207,7 @@ lens path.
   the numbers `Surface` and `position_error` ask for.
 - **[LIMITATIONS.md](docs/LIMITATIONS.md)** — the error budget in metres, every
   figure computed by a committed script, with a cited bibliography.
-- **[TESTS.md](docs/TESTS.md)** — what the 203 tests cover, and more usefully,
+- **[TESTS.md](docs/TESTS.md)** — what the 238 tests cover, and more usefully,
   what they do not.
 
 ## What this is not

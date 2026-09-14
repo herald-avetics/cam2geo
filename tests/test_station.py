@@ -139,7 +139,7 @@ class TestAFittedStation:
     def test_re_aiming_it_raises_and_says_why(self, station):
         fitted = self._fitted(station)
 
-        with pytest.raises(ValueError, match="fitted from control points"):
+        with pytest.raises(ValueError, match="fitted or realigned"):
             fitted.updated(tilt_deg=30.0)
 
     def test_the_corrections_still_work(self, station):

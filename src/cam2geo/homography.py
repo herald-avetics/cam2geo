@@ -272,6 +272,27 @@ class PlaneHomography:
                                lens=self.lens, frame=self.frame,
                                ground_pixel=self.ground_pixel)
 
+    def realigned(self, pixel_transform: np.ndarray) -> PlaneHomography:
+        """The same camera after it moved, given where its old pixels went.
+
+        ``pixel_transform`` maps a pixel of the *reference* image to where that
+        same fixed feature appears now, so composing it with the old matrix gives
+        the view the camera has today without re-surveying anything. This is the
+        boresight correction -- see docs/LIMITATIONS.md, "Negating an error".
+
+        Exact for a camera that rotated about its optical centre, whatever the
+        landmarks' depth; exact for one that also shifted, provided the landmarks
+        lie on the plane. Both maps live in **undistorted** pixels when this view
+        has a lens, so the transform must have been fitted there too.
+        """
+        a = np.asarray(pixel_transform, dtype=float)
+        if a.shape != (3, 3) or not np.isfinite(a).all():
+            raise ValueError("pixel_transform must be a finite 3x3, got "
+                             + repr(a.tolist()))
+        return PlaneHomography(a @ self.matrix, self.width, self.height,
+                               lens=self.lens, frame=self.frame,
+                               ground_pixel=self.ground_pixel)
+
     # -- ground to pixels -------------------------------------------------
 
     def unproject(self, x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -476,11 +497,22 @@ class CameraStation:
         if any(changes[f] != getattr(self.pose, f)
                for f in ("tilt_deg", "yaw_deg", "roll_deg") if f in changes):
             raise ValueError(
-                "this view was fitted from control points, not derived from a "
-                "pose, so re-aiming the camera cannot update it; fit a new "
-                "homography instead. Position may still be changed."
+                "this view was fitted or realigned, not derived from a pose, so "
+                "re-aiming the camera cannot update it; fit a new homography "
+                "instead. Position may still be changed."
             )
         return CameraStation(self.view, pose, self.name, self.lens)
+
+    def realigned(self, pixel_transform: np.ndarray) -> CameraStation:
+        """The station after the camera drifted, corrected against fixed landmarks.
+
+        The mast has not moved, so position carries over; where the camera points
+        has, so the orientation is dropped rather than left stale -- the matrix is
+        now the only trustworthy record of it, exactly as for a fitted view.
+        """
+        pose = replace(self.pose, tilt_deg=None, yaw_deg=None)
+        return CameraStation(self.view.realigned(pixel_transform), pose,
+                             self.name, self.lens)
 
     def range_m(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
         """Ground distance from the camera to each pixel's point, in metres."""

@@ -153,9 +153,43 @@ class TestTheFitAgainstOpenCV:
         pixels = np.column_stack([u, v])
 
         ours = fit_homography(plane, pixels, camera.width, camera.height,
-                              method="exact").homography.matrix
+                              method="exact")
         theirs, _ = cv2.findHomography(plane, pixels, 0)
 
-        # Both are defined up to scale, so normalise before comparing.
-        np.testing.assert_allclose(ours / ours[2, 2], theirs / theirs[2, 2],
-                                   rtol=1e-9)
+        # Compared as maps, not as matrices: the two agree on where every point
+        # goes, which is the claim, while individual entries include structural
+        # near-zeros where a relative tolerance means nothing.
+        back = theirs @ np.vstack([plane[:, 0], plane[:, 1], np.ones(len(plane))])
+        theirs_px = np.column_stack([back[0] / back[2], back[1] / back[2]])
+        ours_px = np.column_stack(ours.homography.unproject(plane[:, 0], plane[:, 1]))
+
+        np.testing.assert_allclose(ours_px, theirs_px, atol=1e-6)
+
+    def test_solving_about_the_centroid_beats_calling_opencv_directly(self):
+        """Why fit_homography does not simply hand the points to OpenCV.
+
+        In degrees the marks' spread is about 1e-5 of their magnitude, and
+        OpenCV's own normalisation does not survive it: an exactly-determined
+        four-point fit comes back 0.66 px out. Centring first costs three lines.
+        """
+        cv2 = pytest.importorskip("cv2")
+        from cam2geo import GeodeticPlane, fit_homography
+
+        camera = build_camera()
+        metric = np.array([[-50.0, 60.0], [50.0, 60.0], [-30.0, 200.0], [30.0, 200.0]])
+        u, v = camera.unproject(metric[:, 0], metric[:, 1])
+        pixels = np.column_stack([u, v])
+        # The same four marks, relabelled as longitude and latitude off a headland.
+        degrees = metric * 9.0e-6 + np.array([-4.14, 50.35])
+
+        ours = fit_homography(degrees, pixels, camera.width, camera.height,
+                              frame=GeodeticPlane(), method="exact")
+        theirs, _ = cv2.findHomography(degrees, pixels, 0)
+        back = theirs @ np.vstack([degrees[:, 0], degrees[:, 1], np.ones(4)])
+        their_rms = float(np.sqrt(np.mean(np.sum(
+            (np.column_stack([back[0] / back[2], back[1] / back[2]]) - pixels) ** 2,
+            axis=1))))
+
+        assert their_rms > 0.1, "the trap is real, not hypothetical"
+        assert ours.rms_px < 1e-3
+        assert ours.rms_px < their_rms / 100.0

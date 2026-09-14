@@ -185,3 +185,64 @@ class TestALensInTheFit:
 
         assert fit.rms_px < 1e-3
         assert fit.homography.lens is lens
+
+
+class TestFarFromTheOrigin:
+    """Plane coordinates whose spread is tiny next to their magnitude.
+
+    The geodetic case: longitudes near -4 and latitudes near 50, with the marks
+    spread over a thousandth of a degree. That is a relative spread of about
+    1e-5, and a DLT solved on those numbers directly loses most of its precision
+    -- 0.66 px on a fit that is exact by construction. fit_homography solves
+    about the centroid to avoid it.
+    """
+
+    #: (scale, origin) pairs a real survey actually produces: metres about a
+    #: local origin, degrees about a headland, metres about a UTM false easting.
+    FRAMES = [(1.0, (0.0, 0.0)), (9.0e-6, (-4.14, 50.35)),
+              (1.0, (500000.0, 5600000.0))]
+
+    def _shifted(self, scale, origin, points=None):
+        return (CONTROL if points is None else points) * scale + np.asarray(origin)
+
+    @pytest.mark.parametrize("scale, origin", FRAMES,
+                             ids=["metres", "lonlat", "utm"])
+    def test_the_fit_is_exact_wherever_the_origin_sits(self, camera, scale, origin):
+        """Four marks give eight equations for eight unknowns, so the residual is
+        zero by construction -- and must stay zero in any coordinates."""
+        plane = self._shifted(scale, origin, CONTROL[:4])
+        # Pixels come from the camera built on the metric points; relabelling the
+        # plane coordinates changes the numbers, not the geometry.
+        pixels = _pixels_of(camera, CONTROL[:4])
+
+        fit = fit_homography(plane, pixels, WIDTH, HEIGHT, method="exact")
+
+        assert fit.rms_px < 1e-3
+
+    @pytest.mark.parametrize("scale, origin", FRAMES,
+                             ids=["metres", "lonlat", "utm"])
+    def test_positions_agree_across_those_origins(self, camera, scale, origin):
+        """The same detection lands in the same place, once the relabelling is
+        undone. This is the test the centroid solve exists to pass."""
+        pixels = _pixels_of(camera, CONTROL)
+        probe = (np.array([700.0, 1200.0]), np.array([900.0, 640.0]))
+        reference = fit_homography(CONTROL, pixels, WIDTH, HEIGHT, method="exact")
+        expected = reference.homography.project(*probe)
+
+        fit = fit_homography(self._shifted(scale, origin), pixels, WIDTH, HEIGHT,
+                             method="exact")
+        got = fit.homography.project(*probe)
+
+        # Rescaling amplifies error by 1/scale, so 1e-4 here is 2 micrometres
+        # on the ground in the lon/lat case -- the centred DLT's own floor.
+        np.testing.assert_allclose((got.x - origin[0]) / scale, expected.x, atol=1e-4)
+        np.testing.assert_allclose((got.y - origin[1]) / scale, expected.y, atol=1e-4)
+
+    def test_a_spread_too_small_for_double_precision_is_refused(self, camera):
+        """Degree-sized marks about a metre-sized origin: a relative spread of
+        1e-10, which no DLT survives. It raises rather than returning nonsense."""
+        plane = self._shifted(9.0e-6, (500000.0, 5600000.0))
+        pixels = _pixels_of(camera, CONTROL)
+
+        with pytest.raises(ValueError, match="singular"):
+            fit_homography(plane, pixels, WIDTH, HEIGHT, method="exact")

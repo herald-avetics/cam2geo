@@ -11,7 +11,14 @@ from .demo import (
     pole_camera,
     wide_quay,
 )
-from .fit import FIT_METHODS, HomographyFit, fit_homography
+from .fit import (
+    ALIGN_MODELS,
+    FIT_METHODS,
+    Alignment,
+    HomographyFit,
+    align_pixels,
+    fit_homography,
+)
 from .frames import GeodeticPlane, MetricPlane, PlaneFrame
 from .homography import (
     EARTH_RADIUS_M,
@@ -27,11 +34,13 @@ from .surface import SURFACES, ErrorBudget, Surface, position_error
 __version__ = "0.1.0"
 
 __all__ = [
+    "ALIGN_MODELS",
     "BOX_ANCHORS",
     "EARTH_RADIUS_M",
     "FIT_METHODS",
     "SETUPS",
     "SURFACES",
+    "Alignment",
     "CameraPose",
     "CameraStation",
     "ErrorBudget",
@@ -45,6 +54,7 @@ __all__ = [
     "Setup",
     "Surface",
     "__version__",
+    "align_pixels",
     "anchor_pixel",
     "coastal_mast",
     "fit_homography",

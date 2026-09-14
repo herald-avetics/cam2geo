@@ -148,6 +148,52 @@ are undistorted first, so the matrix lands in the pixel space everything else
 assumes. **A uniform tilt of the surface is absorbed here for free** — do not
 correct for crossfall or camber again afterwards.
 
+Four points is the minimum, and it fits them *exactly* — `rms_px` is 0.00
+however wrong the survey is. The first honest signal about the fit arrives with
+the fifth mark. See [`examples/four_points.py`](../examples/four_points.py).
+
+> Plane coordinates are often degrees: magnitude 50, spread 0.001. The fit solves
+> about their centroid because OpenCV's own normalisation does not survive that
+> ratio — fitting four marks in raw longitude and latitude costs **0.66 px of
+> pure arithmetic** on a fit that is exact by construction, against 5e-5 px
+> centred. Nothing to configure; noted because the symptom is a plausible
+> residual that is not measuring your survey.
+
+## align_pixels and realigned
+
+```python
+from cam2geo import align_pixels
+
+alignment = align_pixels(reference_px, current_px, lens=lens,
+                         model="rotation", method="ransac")
+alignment.drift_deg, alignment.residual_deg, alignment.rms_px
+alignment.motion_px, alignment.inliers, alignment.transform
+
+view = view.realigned(alignment.transform)          # PlaneHomography
+station = station.realigned(alignment.transform)    # keeps position, drops orientation
+```
+
+Boresighting: measure how far a fixed camera has drifted since its homography was
+fitted, and undo it. The landmarks need **no known coordinates** — only to be
+things that have not moved, found in both images. Two or more for
+`model="rotation"`, four or more for `model="homography"`.
+
+`model` is the parameter that matters. `"rotation"` gives the camera the three
+freedoms a mount actually has; `"homography"` gives it eight, which also covers a
+camera that *shifted* but lets clicking error into five parameters the camera does
+not have — and hides that noise in a smaller residual, so `rms_px` will not warn
+you. Prefer the default unless the mast itself moved.
+
+`residual_deg` is what alignment could not explain, and is the number to pass back
+as `pointing_sigma_deg`: drift you measured is gone, and only this is left to
+budget for. Full treatment in [LIMITATIONS.md §7.1](LIMITATIONS.md), worked
+example in
+[`examples/boresight_from_landmarks.py`](../examples/boresight_from_landmarks.py).
+
+`station.realigned` keeps the camera's position — the mast has not moved — and
+drops `tilt_deg`/`yaw_deg` rather than leaving them stale, so the matrix becomes
+the only record of where it points, exactly as for a fitted view.
+
 ## anchor_pixel
 
 ```python

@@ -1,6 +1,6 @@
 # What the tests cover
 
-203 tests, all synthetic. Run them with `uv run pytest`.
+238 tests, all synthetic. Run them with `uv run pytest`.
 
 The point of this document is to make the *gaps* visible. A green suite here
 means the geometry is self-consistent and matches independent implementations of
@@ -24,13 +24,14 @@ hold at `1e-12`.
 |---|---:|---|
 | `test_homography.py` | 62 | The projection contract, the horizon rule, conditioning, the Jacobian, footprints, fingerprints |
 | `test_demo.py` | 30 | The demo setups, including the one with a real lens |
+| `test_align.py` | 27 | Boresighting: measuring drift, undoing it, and why the model is constrained |
 | `test_station.py` | 27 | Pose-derived vs fitted stations, re-aiming, range, shared origins |
 | `test_surface.py` | 25 | The error budget, and the bias/random split |
+| `test_fit.py` | 21 | Fitting from control points, residuals, outliers, surface tilt, distant origins |
 | `test_lens.py` | 15 | Undistortion, and NaN where the model has no inverse |
-| `test_fit.py` | 14 | Fitting from control points, residuals, outliers, surface tilt |
 | `test_anchors.py` | 12 | Box anchors, including rotated boxes |
 | `test_frames.py` | 11 | Metric and geodetic plane units |
-| `test_oracles.py` | 7 | **Our maths against other people's implementations** |
+| `test_oracles.py` | 8 | **Our maths against other people's implementations** |
 
 ## The guarantees, and the tests that hold them
 
@@ -66,6 +67,19 @@ origin — the correction is radial about the nadir, not about the origin.
 and the residuals stay below half a pixel, which is the test that stops anyone
 correcting for camber twice.
 
+**Drift is measured, not guessed.** A known rotation applied to the reference
+camera is recovered to `1e-4` degrees in yaw, tilt and roll separately, and
+realigning the stale view cancels the position error to `1e-4` m. A companion test
+first establishes that the stale view *is* wrong, or the correction would prove
+nothing.
+
+**The constrained model is the defensible one.** Three tests defend the choice of
+`model="rotation"` as the default, and they are statistical rather than
+single-draw: over 30 independent sets of clicks at half a pixel each, the
+eight-parameter fit's drift estimate has more than three times the spread of the
+rotation fit's, while reporting a *smaller* residual — so the noise cannot be
+caught by checking `rms_px`. The rotation fit resolves a hundredth of a degree.
+
 **Biases and random errors combine differently.** One test asserts the random
 terms are the quadrature sum; another asserts the bias sum is strictly larger
 than their quadrature sum, which is the whole reason they are kept apart.
@@ -80,9 +94,22 @@ so it answers to other people's code instead.
 | `jacobian` | `scipy.differentiate.jacobian` | better than **1e-11 absolute**, at every probe row, for a rolled camera too |
 | `project` | `cv2.perspectiveTransform` | full double precision on the ground side |
 | `unproject` | `cv2.perspectiveTransform` | `rtol=1e-12` |
-| `fit_homography` | `cv2.findHomography` | `rtol=1e-9` after normalising for scale |
+| `fit_homography` | `cv2.findHomography` | `atol=1e-6` px, compared as maps rather than as matrices |
 | `Lens.undistort` | `cv2.projectPoints` round trip | `atol=1e-6` px |
 | `GeodeticPlane.distance_m` | `pymap3d.geodetic2ned` | `rtol=1e-12` |
+
+`align_pixels` has no library to answer to, so it answers to closed-form truth
+instead: a rotation of known angle is applied to the reference camera and the
+estimate must return that angle. Its tolerances are looser than the rest of the
+suite for one measured reason — `cv2.findHomography` lands about `2e-5` px from
+the exact answer even on noiseless input, which is `3e-6` degrees, and the tests
+sit just outside that floor rather than pretending to double precision.
+
+A seventh oracle test runs the other way, asserting we are **better** than the
+library: `test_solving_about_the_centroid_beats_calling_opencv_directly` fits the
+same four marks in degrees both ways and requires ours to be at least 100x closer.
+It also asserts OpenCV's own error exceeds 0.1 px first, so the test fails loudly
+if a future OpenCV fixes this and the workaround becomes dead weight.
 
 One of these earns its place twice.
 `test_opencv_returns_the_mirrored_point_beyond_the_horizon` shows OpenCV agreeing
@@ -109,6 +136,26 @@ Two were found by running the worked example rather than by reasoning:
   pairing it with a `GeodeticPlane` produced a silently wrong camera. Now
   refused, and pinned by `test_a_geodetic_frame_is_refused`.
 
+## Bugs the alignment work found
+
+Both were found by writing an example and reading its output, which is now twice
+this project's most productive review technique.
+
+- **A fit in longitude and latitude lost 0.66 px to arithmetic.** Control-point
+  coordinates have magnitude 50 and a spread of 0.001, and OpenCV's internal
+  normalisation does not survive that ratio: a four-point fit, which is exact by
+  construction, came back with a plausible-looking residual that was measuring
+  nothing but round-off. `fit_homography` now solves about the centroid, taking
+  the same fit to 5e-5 px. Pinned by `TestFarFromTheOrigin`, which checks a local
+  metric frame, a lon/lat frame and a UTM frame agree, and by an oracle test
+  asserting we beat a direct OpenCV call by more than 100x.
+- **The first boresight estimator reported a degree of drift for a camera that
+  had not moved.** An eight-parameter homography fitted to six landmarks with
+  half a pixel of clicking error puts that error into the five parameters a
+  camera on a mount does not have. The fix was to constrain the estimate to a
+  rotation. Caught by the example's own monitoring rule printing `realign` on a
+  calm day.
+
 ## What is **not** covered
 
 Read this part before trusting the suite.
@@ -131,7 +178,11 @@ Read this part before trusting the suite.
 - **No accuracy claim.** Every test here is a consistency or agreement check.
   Nothing in this repository establishes that a position produced by this library
   is *correct* against an independent ground truth — because a homography is a
-  measurement with nothing behind it. See LIMITATIONS.md §8.
+  measurement with nothing behind it. See LIMITATIONS.md §9.
+- **No real landmark matching.** The alignment tests supply corresponding
+  landmark pixels directly. Finding the same feature in two images — the actual
+  hard part of boresighting in service — is out of scope for this library and
+  untested here.
 - **Numerics near the horizon.** Tests assert behaviour is *unbounded* there
   (`inf`, or NaN), not that any particular value is right. There is no right
   value.
