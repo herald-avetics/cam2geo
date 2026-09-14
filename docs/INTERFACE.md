@@ -150,7 +150,17 @@ correct for crossfall or camber again afterwards.
 
 Four points is the minimum, and it fits them *exactly* — `rms_px` is 0.00
 however wrong the survey is. The first honest signal about the fit arrives with
-the fifth mark. See [`examples/four_points.py`](../examples/four_points.py).
+the fifth mark.
+
+> **Do not reach for a robust method when your control error is uniform.**
+> Given eight marks each carrying the same 5 m of coordinate error, RANSAC and
+> LMedS both discard marks that are not outliers — and *which* ones depends on
+> the threshold. The reported `rms_px` then spans a factor of two hundred while
+> the real accuracy barely moves, so a beautiful residual from a robust fit
+> means only that it fitted a lucky subset. `method="exact"` keeps every mark
+> and reports the residual your survey actually has. Reserve the robust methods
+> for genuine misidentification. Demonstrated in
+> [`examples/from_a_real_image.py`](../examples/from_a_real_image.py).
 
 > Plane coordinates are often degrees: magnitude 50, spread 0.001. The fit solves
 > about their centroid because OpenCV's own normalisation does not survive that

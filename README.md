@@ -166,9 +166,10 @@ See [`examples/boresight_from_landmarks.py`](examples/boresight_from_landmarks.p
 
 | | |
 |---|---|
-| [`four_points.py`](examples/four_points.py) | The minimum: four known points in, world coordinates out |
+| [`from_a_real_image.py`](examples/from_a_real_image.py) | Eight named features off one frame, coordinates off Sentinel-2, then boresighted |
 | [`from_gps_control_points.py`](examples/from_gps_control_points.py) | The same, done properly — anchors, budget, footprint, refusals |
 | [`boresight_from_landmarks.py`](examples/boresight_from_landmarks.py) | The camera got knocked. Measure the drift and remove it |
+| [`terrain_sites.py`](examples/terrain_sites.py) | Three real terrain types, and which errors the corrections actually remove |
 
 More in [examples/README.md](examples/README.md).
 

@@ -5,12 +5,12 @@ survey — where real data would be needed, a synthetic camera stands in for it 
 says so.
 
 ```
-uv run python examples/four_points.py
+uv run python examples/from_a_real_image.py
 ```
 
 | example | what it answers | needs |
 |---|---|---|
-| [`four_points.py`](four_points.py) | I have four points whose coordinates I know. How do I get world coordinates for a pixel? | `lens`, `geodetic` |
+| [`from_a_real_image.py`](from_a_real_image.py) | Eight named features off one camera frame, coordinates off Sentinel-2, then boresighted against a later frame. | `lens`, `geodetic` |
 | [`from_gps_control_points.py`](from_gps_control_points.py) | The same, done properly: box anchors, an error budget, a footprint, and a detection the geometry refuses. | `lens`, `geodetic` |
 | [`boresight_from_landmarks.py`](boresight_from_landmarks.py) | The camera has been knocked and I cannot re-survey it. How do I measure the drift and remove it? | `lens` |
 | [`terrain_sites.py`](terrain_sites.py) | Three real terrain types, control points off Sentinel-2, and which errors the corrections actually remove. | `lens`, `geodetic` |
@@ -21,11 +21,29 @@ pip install 'cam2geo[lens,geodetic]'
 
 ## Where to start
 
-**`four_points.py`** is the minimum: four `(longitude, latitude)` ↔ `(column, row)`
-pairs, one call to `fit_homography`, and every pixel below the horizon becomes a
-position. It also makes the point that four marks fit *exactly* — an rms of
-0.00 px however wrong the survey is — so the residual only starts telling you
-something at the fifth.
+**`from_a_real_image.py`** is the place to start. Eight things you can identify
+in both an oblique camera frame and a Sentinel-2 scene — breakwater ends, fort
+corners, a beacon, a slipway — with their pixel positions and the coordinates read
+off the satellite image, then the same eight found again in a frame taken months
+later. That second table is all boresighting needs, and it carries no
+coordinates at all.
+
+It also contains the sharpest finding in the repo. Asked to fit those eight marks,
+every robust method **invents an outlier that is not there**:
+
+```
+  method   threshold   rms px   kept   discarded
+  exact           --     8.56      8   --
+  ransac        8 px     1.55      7   mooring buoy A
+  ransac       20 px     4.94      7   breakwater west end
+  lmeds           --     0.04      5   navigation beacon, slipway toe, quay corner
+```
+
+Nothing here is an outlier: every mark carries the same 5 m. But RANSAC assumes a
+few points are badly wrong, while marks read off coarse imagery are *all* mildly
+wrong — the one case it cannot handle. It picks a lucky subset, reports a residual
+two hundred times smaller, and is no more accurate. **Use `method="exact"`, and
+treat a suspiciously small `rms_px` as a warning rather than a result.**
 
 **`from_gps_control_points.py`** is the same workflow as you would actually run
 it: six marks, boxes rather than bare pixels, a conditioning cutoff, the error
@@ -61,6 +79,25 @@ the day it was fitted*; a gale, a ladder or a warm afternoon moves it, and every
 position afterwards is silently and systematically wrong. The example measures
 92 m of error at 820 m range from 0.6° of drift, then removes it using landmarks
 whose coordinates are never known — only that they have not moved.
+
+## The figures
+
+Every example is text-only, so nothing needs matplotlib to run. The figures built
+from them live in `docs/figures/` and regenerate from a committed script, the same
+rule the error tables follow:
+
+```
+uv run --group docs python docs/figures/make_figures.py
+```
+
+- `marks.svg` — the eight features on the frame, with the horizon and the
+  detections, and an arrow per feature showing the drift between the two frames.
+- `corrections.svg` — mean position error against range for all three terrain
+  sites, corrected and uncorrected, over 120 surveys each.
+
+![Eight features and the drift between two frames](../docs/figures/marks.svg)
+
+![Corrections against range](../docs/figures/corrections.svg)
 
 ## Using a real image
 
