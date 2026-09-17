@@ -189,18 +189,10 @@ Two invariants hold everywhere:
 
 ## Try it without a camera
 
-Three synthetic setups ship with the library, and every figure and table in the
-documentation is computed from them:
-
-```python
-from cam2geo import coastal_mast, moorland_mast, pole_camera, wide_quay
-
-setup = coastal_mast()                       # 30 m mast, 8° down-tilt, over the sea
-setup.view.project(u, v, max_m_per_px=1.0)
-```
-
-`wide_quay()` is the fourth, carrying real barrel distortion, for exercising the
-lens path.
+Three synthetic cameras, and every figure and table in the documentation is
+computed from them. They live in `docs/setups.py` rather than in the library,
+because nothing but the documentation needs them and a camera nobody has
+installed has no business shipping in a wheel.
 
 ## Documentation
 
@@ -208,7 +200,7 @@ lens path.
   the numbers `Surface` and `position_error` ask for.
 - **[LIMITATIONS.md](docs/LIMITATIONS.md)** — the error budget in metres, every
   figure computed by a committed script, with a cited bibliography.
-- **[TESTS.md](docs/TESTS.md)** — what the 233 tests cover, and more usefully,
+- **[TESTS.md](docs/TESTS.md)** — what the 203 tests cover, and more usefully,
   what they do not.
 
 ## What this is not

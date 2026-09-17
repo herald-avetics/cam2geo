@@ -1,6 +1,6 @@
 # What the tests cover
 
-233 tests, all synthetic. Run them with `uv run pytest`.
+203 tests, all synthetic. Run them with `uv run pytest`.
 
 The point of this document is to make the *gaps* visible. A green suite here
 means the geometry is self-consistent and matches independent implementations of
@@ -23,7 +23,6 @@ hold at `1e-12`.
 | file | tests | what it defends |
 |---|---:|---|
 | `test_homography.py` | 58 | The projection contract, the horizon rule, conditioning, the Jacobian, footprints, fingerprints |
-| `test_demo.py` | 30 | The demo setups, including the one with a real lens |
 | `test_align.py` | 26 | Boresighting: measuring drift, undoing it, and why the model is constrained |
 | `test_station.py` | 27 | Pose-derived vs fitted stations, re-aiming, range, shared origins |
 | `test_surface.py` | 26 | The error budget, and the bias/random split |
@@ -169,9 +168,9 @@ Read this part before trusting the suite.
 - **No non-planar ground.** The one surface departure exercised is a uniform
   tilt. Undulation, berms, stepped surfaces and terrain relief appear only as
   numbers in the error budget, never as geometry under test.
-- **No real distortion model.** `wide_quay` uses a single `k1` term. Tangential
-  distortion, `k2`/`k3`, and fisheye projections are implemented but untested
-  against a real calibration.
+- **No real distortion model.** The distortion tests use a single `k1` term.
+  Tangential distortion, `k2`/`k3`, and fisheye projections are implemented but
+  untested against a real calibration.
 - **The Surface presets are not validated.** They are starting points with cited
   provenance, not measurements. No test asserts that `SURFACES["sea"]` describes
   any actual sea.

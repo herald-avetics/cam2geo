@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import pathlib
+import sys
 
 import matplotlib
 
@@ -13,7 +14,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
-from cam2geo import SETUPS, position_error  # noqa: E402
+from cam2geo import position_error  # noqa: E402
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+from setups import SETUPS  # noqa: E402
 
 HERE = pathlib.Path(__file__).parent
 # Readable on a white or a dark page, which is what a README gets.

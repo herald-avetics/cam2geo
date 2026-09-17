@@ -3,14 +3,6 @@
 from __future__ import annotations
 
 from .anchors import BOX_ANCHORS, anchor_pixel
-from .demo import (
-    SETUPS,
-    Setup,
-    coastal_mast,
-    moorland_mast,
-    pole_camera,
-    wide_quay,
-)
 from .fit import (
     ALIGN_MODELS,
     FIT_METHODS,
@@ -38,7 +30,6 @@ __all__ = [
     "BOX_ANCHORS",
     "EARTH_RADIUS_M",
     "FIT_METHODS",
-    "SETUPS",
     "SURFACES",
     "Alignment",
     "CameraPose",
@@ -51,16 +42,11 @@ __all__ = [
     "MetricPlane",
     "PlaneFrame",
     "PlaneHomography",
-    "Setup",
     "Surface",
     "__version__",
     "align_pixels",
     "anchor_pixel",
-    "coastal_mast",
     "fit_homography",
     "homography_from_pose",
-    "moorland_mast",
-    "pole_camera",
     "position_error",
-    "wide_quay",
 ]

@@ -290,9 +290,9 @@ LIMITATIONS §6.
 `range_m` comes back too, and is NaN wherever the pixel could not be placed,
 which makes every other term NaN with it.
 
-## demo
+## Synthetic setups
 
-Three named synthetic setups so every example here runs with no calibration of
-your own: `coastal_mast()`, `moorland_mast()`, `pole_camera()`. Each returns a
-`Setup` with `.station`, `.view`, `.surface`, `.name` and `.description`. They are
-also what the error tables and figures are computed from.
+Not part of the library. The three cameras the error tables and figures are
+computed from live in `docs/setups.py`, because nothing but the documentation
+needs them. For the library working on real ground, see
+`scripts/project_points.py`.

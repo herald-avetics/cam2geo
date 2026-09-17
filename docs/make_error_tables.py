@@ -9,8 +9,9 @@ hand-written; if one looks wrong, fix the library or this script, not the prose.
 from __future__ import annotations
 
 import numpy as np
+from setups import SETUPS
 
-from cam2geo import SETUPS, position_error
+from cam2geo import position_error
 
 #: What a detector's or annotator's error is worth, in pixels.
 PIXEL_SIGMA = 1.0
