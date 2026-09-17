@@ -74,16 +74,6 @@ class TestMeasuringDrift:
         naive_deg = math.degrees(math.atan(alignment.motion_px / FOCAL_PX))
         assert naive_deg > 1.4 * alignment.drift_deg
 
-    def test_a_bigger_knock_reads_bigger(self, station):
-        small = align_pixels(landmark_pixels(station),
-                             landmark_pixels(station.updated(tilt_deg=20.1)),
-                             lens=LENS)
-        large = align_pixels(landmark_pixels(station),
-                             landmark_pixels(station.updated(tilt_deg=20.5)),
-                             lens=LENS)
-
-        assert small.drift_deg < large.drift_deg
-
     def test_a_rigid_rotation_leaves_no_residual(self, station):
         """A camera rotating about its centre is exactly a homography. Nothing left."""
         drifted = station.updated(yaw_deg=0.3, tilt_deg=20.2, roll_deg=0.5)

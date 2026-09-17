@@ -208,7 +208,7 @@ lens path.
   the numbers `Surface` and `position_error` ask for.
 - **[LIMITATIONS.md](docs/LIMITATIONS.md)** — the error budget in metres, every
   figure computed by a committed script, with a cited bibliography.
-- **[TESTS.md](docs/TESTS.md)** — what the 238 tests cover, and more usefully,
+- **[TESTS.md](docs/TESTS.md)** — what the 233 tests cover, and more usefully,
   what they do not.
 
 ## What this is not

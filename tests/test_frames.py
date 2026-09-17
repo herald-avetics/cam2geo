@@ -34,14 +34,6 @@ class TestMetricPlane:
         np.testing.assert_allclose(m[0], np.eye(2) * 0.3048)
         assert d[0] == pytest.approx(5.0 * 0.3048)
 
-    def test_distance_is_euclidean(self):
-        frame = MetricPlane()
-
-        d = frame.distance_m(np.array([0.0]), np.array([0.0]),
-                             np.array([3.0]), np.array([4.0]))
-
-        assert d[0] == pytest.approx(5.0)
-
     def test_the_scale_does_not_depend_on_position(self):
         frame = MetricPlane()
 

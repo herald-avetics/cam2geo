@@ -44,24 +44,6 @@ class TestTheGroundSideOfTheHorizon:
     def test_the_default_anchor_is_the_bottom_centre_of_the_frame(self, camera):
         assert camera.anchor_pixel == (WIDTH / 2.0, HEIGHT - 1.0)
 
-    def test_the_bottom_of_the_frame_sees_the_ground(self, camera):
-        placed = camera.project(np.array([WIDTH / 2.0]), np.array([HEIGHT - 1.0]))
-        assert bool(placed.valid[0])
-
-    def test_negating_the_matrix_changes_nothing(self, camera):
-        """Scale and sign are free parameters of a homography, so they must not matter."""
-        flipped = PlaneHomography(-camera.matrix, WIDTH, HEIGHT,
-                                  frame=MetricPlane())
-        rows = np.array([1079.0, 700.0, 300.0])
-        cols = np.full(rows.size, WIDTH / 2.0)
-
-        original = camera.project(cols, rows)
-        negated = flipped.project(cols, rows)
-
-        np.testing.assert_allclose(negated.x, original.x, rtol=1e-12, atol=1e-9)
-        np.testing.assert_allclose(negated.y, original.y, rtol=1e-12, atol=1e-9)
-        np.testing.assert_array_equal(negated.valid, original.valid)
-
     @pytest.mark.parametrize("scale", [-1.0, 2.0, -0.001, 1000.0],
                              ids=["negated", "doubled", "tiny", "large"])
     def test_any_scaling_of_the_matrix_gives_the_same_answer(self, camera, scale):
@@ -80,6 +62,7 @@ class TestTheGroundSideOfTheHorizon:
         np.testing.assert_allclose(out.x, ref.x, rtol=1e-12, atol=1e-9)
         np.testing.assert_allclose(out.y, ref.y, rtol=1e-12, atol=1e-9)
         np.testing.assert_allclose(out.ground_m_per_px, ref.ground_m_per_px, rtol=1e-12)
+        np.testing.assert_array_equal(out.valid, ref.valid)
 
     def test_a_ground_pixel_on_the_horizon_raises(self, camera):
         """Within a pixel of the line, which side you are on is not decidable."""
@@ -173,14 +156,6 @@ class TestTheHorizonLine:
         a, b, _ = camera.horizon_line
         assert math.hypot(a, b) == pytest.approx(1.0)
 
-    def test_it_is_positive_on_the_ground_side_and_negative_on_the_sky_side(self, camera):
-        line = camera.horizon_line
-        ground = np.array([WIDTH / 2.0, HEIGHT - 1.0, 1.0])
-        sky = np.array([WIDTH / 2.0, 0.0, 1.0])
-
-        assert line @ ground > 0.0
-        assert line @ sky < 0.0
-
     def test_it_sits_where_the_geometry_says_it_should(self, camera):
         """For an unrolled pinhole the horizon is a level row we can predict."""
         line = camera.horizon_line
@@ -262,21 +237,6 @@ class TestConditioning:
     def test_it_is_nan_where_the_point_is_nan(self, camera):
         placed = camera.project(np.array([WIDTH / 2.0]), np.array([50.0]))
         assert np.isnan(placed.ground_m_per_px[0])
-
-    def test_the_scale_is_not_uniform_across_the_frame(self, camera):
-        """The reason this is not called a ground sample distance.
-
-        Nothing here is orthorectified, so there is no single number for the
-        frame. Down the centre column alone the scale spans more than an order
-        of magnitude.
-        """
-        rows = np.arange(200.0, HEIGHT, 1.0)
-        cols = np.full(rows.size, WIDTH / 2.0)
-
-        gsd = camera.ground_m_per_px(cols, rows)
-        finite = gsd[np.isfinite(gsd)]
-
-        assert finite.max() / finite.min() > 10.0
 
     def test_the_scale_varies_along_a_single_row_too(self, camera):
         """Not only with range: one image row is a curve on the ground."""

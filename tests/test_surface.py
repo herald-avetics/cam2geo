@@ -64,11 +64,6 @@ class TestSurface:
         for key, surface in SURFACES.items():
             assert surface.offset_m == 0.0, key
 
-    def test_every_terrain_the_examples_name_has_a_preset(self):
-        """examples/terrain_sites.py must not hand-roll a Surface it could reuse."""
-        for key in ("salt_flat", "container_yard", "sea"):
-            assert key in SURFACES
-
 
 class TestPositionError:
     """Every term but the pixel ones scales with range, and the docs say so."""

@@ -1,6 +1,6 @@
 # What the tests cover
 
-238 tests, all synthetic. Run them with `uv run pytest`.
+233 tests, all synthetic. Run them with `uv run pytest`.
 
 The point of this document is to make the *gaps* visible. A green suite here
 means the geometry is self-consistent and matches independent implementations of
@@ -22,15 +22,15 @@ hold at `1e-12`.
 
 | file | tests | what it defends |
 |---|---:|---|
-| `test_homography.py` | 62 | The projection contract, the horizon rule, conditioning, the Jacobian, footprints, fingerprints |
+| `test_homography.py` | 58 | The projection contract, the horizon rule, conditioning, the Jacobian, footprints, fingerprints |
 | `test_demo.py` | 30 | The demo setups, including the one with a real lens |
-| `test_align.py` | 27 | Boresighting: measuring drift, undoing it, and why the model is constrained |
+| `test_align.py` | 26 | Boresighting: measuring drift, undoing it, and why the model is constrained |
 | `test_station.py` | 27 | Pose-derived vs fitted stations, re-aiming, range, shared origins |
-| `test_surface.py` | 25 | The error budget, and the bias/random split |
+| `test_surface.py` | 26 | The error budget, and the bias/random split |
 | `test_fit.py` | 21 | Fitting from control points, residuals, outliers, surface tilt, distant origins |
 | `test_lens.py` | 15 | Undistortion, and NaN where the model has no inverse |
 | `test_anchors.py` | 12 | Box anchors, including rotated boxes |
-| `test_frames.py` | 11 | Metric and geodetic plane units |
+| `test_frames.py` | 10 | Metric and geodetic plane units |
 | `test_oracles.py` | 8 | **Our maths against other people's implementations** |
 
 ## The guarantees, and the tests that hold them
