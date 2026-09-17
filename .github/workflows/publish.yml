@@ -4,6 +4,12 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      target:
+        description: Which index to publish to
+        type: choice
+        default: testpypi
+        options: [testpypi, pypi]
 
 jobs:
   build:
@@ -25,7 +31,7 @@ jobs:
           path: dist/
 
   testpypi:
-    if: github.event_name == 'workflow_dispatch'
+    if: inputs.target == 'testpypi'
     needs: build
     runs-on: ubuntu-latest
     environment: testpypi
@@ -41,7 +47,7 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
 
   pypi:
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || inputs.target == 'pypi'
     needs: build
     runs-on: ubuntu-latest
     environment: pypi
