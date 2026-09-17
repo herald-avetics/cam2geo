@@ -1,0 +1,91 @@
+# Points marked on camargue_salt_pans.tif.
+#
+# You write label and px. Everything else scripts/annotate.py writes on every
+# run, comments included -- hand-edit a derived field and it goes. Prose belongs
+# in a point's note.
+#
+#   points:
+#     - label: "breakwater west end"
+#       px: [212.5, 331.0]
+#
+# px is [column, row] from the top left, and [0.5, 0.5] is the first pixel's
+# centre. One decimal place is already a metre at 10 m per pixel; two is
+# pretending. A homography needs four points, and at exactly four its residual is
+# zero whatever you clicked, so mark five or six.
+
+image:
+  file: "camargue_salt_pans.tif"
+  scene: "S2B_31TFJ_20240806_0_L2A"
+  crs: "EPSG:32631"
+  bbox: [636925.5, 4801595.4, 644925.5, 4809595.4]
+  size_px: [800, 800]
+  sha256: "b904d779642461cf432de192f69c3f28ae18f17690016a9b2bed7bb0f8930fbf"
+  written: "2026-09-17"
+
+# Read out of the product. No assumption in any of it.
+measured:
+  site: "Camargue salt pans"
+  terrain: "salt_flat"
+  acquired: "2024-08-06T10:38:56.986000Z"
+  platform: "sentinel-2b"
+  relative_orbit: "R108"
+  orthorectified: true
+  resolution_m: 10.0
+  view_zenith_deg: 7.092
+  view_azimuth_deg: 106.315
+  sun_zenith_deg: 30.749
+  sun_azimuth_deg: 147.168
+
+# Arithmetic on the angles above, per metre of height above the
+# ground. A thing h metres tall leans relief_m_per_m * h toward
+# relief_bearing_deg and throws shadow_m_per_m * h toward
+# shadow_bearing_deg. Both are why you click the base, not the top.
+inferred:
+  relief_m_per_m: 0.1244
+  relief_bearing_deg: 286.315
+  shadow_m_per_m: 0.5949
+  shadow_bearing_deg: 327.168
+
+# Defaults, not measurements. Replace any you actually know; a
+# point's own sigma_m overrides pick_sigma_m for that point.
+estimated:
+  pick_sigma_m: 5.0
+  target_height_m: null
+  geolocation_bias_m: null
+
+# Not in anything fetched here, at any price.
+unavailable:
+  - "satellite position: the ephemeris is a separate POD product, not in the COG bucket, and an orthorectified image needs none of it"
+  - "water level at acquisition: alt_m over water is the DEM's nominal flat surface, not the tide on the day"
+  - "height of what stands at the point: you supply it, and the inferred block turns it into metres of lean and shadow"
+  - "camera-frame pixel: the other half of a control point, matched by label"
+  - "scene geolocation bias: real, shared by every point here, so it shifts a fit rather than showing up in its residuals; the figure is not verified"
+
+# Sampled per point into alt_m below. A surface model, 30 m posting.
+elevation:
+  source: "Copernicus DEM GLO-30"
+  vertical_datum: "EGM2008 geoid"
+  attribution: "produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
+
+# lonlat, en_m and alt_m are derived from px. Do not hand-edit them.
+points:
+  - label: "patch west"
+    px: [167, 338]
+    lonlat: [4.711462, 43.395968]
+    en_m: [638600.5, 4806210.35]
+    alt_m: -2.26
+  - label: "patch east"
+    px: [635, 316]
+    lonlat: [4.769282, 43.397069]
+    en_m: [643280.5, 4806430.35]
+    alt_m: 0.21
+  - label: "patch north"
+    px: [401, 155]
+    lonlat: [4.740815, 43.412003]
+    en_m: [640940.5, 4808040.35]
+    alt_m: 1.07
+  - label: "patch south"
+    px: [451, 594]
+    lonlat: [4.745853, 43.372398]
+    en_m: [641440.5, 4803650.35]
+    alt_m: -0.51

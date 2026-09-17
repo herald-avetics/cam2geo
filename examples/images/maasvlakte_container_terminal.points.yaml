@@ -1,0 +1,91 @@
+# Points marked on maasvlakte_container_terminal.tif.
+#
+# You write label and px. Everything else scripts/annotate.py writes on every
+# run, comments included -- hand-edit a derived field and it goes. Prose belongs
+# in a point's note.
+#
+#   points:
+#     - label: "breakwater west end"
+#       px: [212.5, 331.0]
+#
+# px is [column, row] from the top left, and [0.5, 0.5] is the first pixel's
+# centre. One decimal place is already a metre at 10 m per pixel; two is
+# pretending. A homography needs four points, and at exactly four its residual is
+# zero whatever you clicked, so mark five or six.
+
+image:
+  file: "maasvlakte_container_terminal.tif"
+  scene: "S2B_31UET_20240812_0_L2A"
+  crs: "EPSG:32631"
+  bbox: [568162.4, 5751997.8, 576162.4, 5759997.8]
+  size_px: [800, 800]
+  sha256: "2e0395e9cd05c50ccdbb165922542d1b4fb6db2ffcccbb4edd402e9eef313051"
+  written: "2026-09-17"
+
+# Read out of the product. No assumption in any of it.
+measured:
+  site: "Maasvlakte container terminal"
+  terrain: "container_yard"
+  acquired: "2024-08-12T10:56:45.707000Z"
+  platform: "sentinel-2b"
+  relative_orbit: "R051"
+  orthorectified: true
+  resolution_m: 10.0
+  view_zenith_deg: 3.456
+  view_azimuth_deg: 124.641
+  sun_zenith_deg: 38.601
+  sun_azimuth_deg: 159.181
+
+# Arithmetic on the angles above, per metre of height above the
+# ground. A thing h metres tall leans relief_m_per_m * h toward
+# relief_bearing_deg and throws shadow_m_per_m * h toward
+# shadow_bearing_deg. Both are why you click the base, not the top.
+inferred:
+  relief_m_per_m: 0.0604
+  relief_bearing_deg: 304.641
+  shadow_m_per_m: 0.7983
+  shadow_bearing_deg: 339.181
+
+# Defaults, not measurements. Replace any you actually know; a
+# point's own sigma_m overrides pick_sigma_m for that point.
+estimated:
+  pick_sigma_m: 5.0
+  target_height_m: null
+  geolocation_bias_m: null
+
+# Not in anything fetched here, at any price.
+unavailable:
+  - "satellite position: the ephemeris is a separate POD product, not in the COG bucket, and an orthorectified image needs none of it"
+  - "water level at acquisition: alt_m over water is the DEM's nominal flat surface, not the tide on the day"
+  - "height of what stands at the point: you supply it, and the inferred block turns it into metres of lean and shadow"
+  - "camera-frame pixel: the other half of a control point, matched by label"
+  - "scene geolocation bias: real, shared by every point here, so it shifts a fit rather than showing up in its residuals; the figure is not verified"
+
+# Sampled per point into alt_m below. A surface model, 30 m posting.
+elevation:
+  source: "Copernicus DEM GLO-30"
+  vertical_datum: "EGM2008 geoid"
+  attribution: "produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
+
+# lonlat, en_m and alt_m are derived from px. Do not hand-edit them.
+points:
+  - label: "mouth east"
+    px: [725, 166]
+    lonlat: [4.097865, 51.970558]
+    en_m: [575417.39, 5758332.81]
+    alt_m: 1.24
+  - label: "mouth west"
+    px: [553, 108]
+    lonlat: [4.072956, 51.976003]
+    en_m: [573697.39, 5758912.81]
+    alt_m: 0.0
+  - label: "inner docks"
+    px: [267, 439]
+    lonlat: [4.030643, 51.946619]
+    en_m: [570837.39, 5755602.81]
+    alt_m: 1.42
+  - label: "inner docks north"
+    px: [150, 298]
+    lonlat: [4.013909, 51.959443]
+    en_m: [569667.39, 5757012.81]
+    alt_m: 0.0
