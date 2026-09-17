@@ -70,7 +70,7 @@ SITES = [
         name="Camargue salt pans",
         terrain="playas, salt flats, dry lake beds",
         features="evaporation-pond dykes -- a geometric grid, crisp at 10 m",
-        lat=43.45, lon=4.74,
+        lat=43.39, lon=4.74,
         height_m=12.0, tilt_deg=6.0, focal_px=1800.0,
         # Dyke intersections on a roughly 200 m pond grid.
         marks_m=np.array([[-90.0, 210.0], [0.0, 205.0], [95.0, 215.0],
@@ -307,7 +307,7 @@ def boresight_demo() -> None:
 
 def main() -> None:
     print(__doc__.split("\n")[0])
-    print("Copernicus Sentinel data 2026 -- see examples/images/MANIFEST.yaml")
+    print("Copernicus Sentinel data 2024 -- see examples/images/MANIFEST.yaml")
     for site in SITES:
         run(site)
     boresight_demo()

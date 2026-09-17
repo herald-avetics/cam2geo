@@ -19,6 +19,58 @@ uv run python examples/from_a_real_image.py
 pip install 'cam2geo[lens,geodetic]'
 ```
 
+## Real imagery
+
+Nothing above needs it, but `fetch_images.py` will pull one Sentinel-2 window
+per terrain site into `images/` and rewrite `images/MANIFEST.yaml` with the
+provenance and checksums of what it fetched:
+
+```
+uv run --group images python scripts/fetch_images.py
+```
+
+The files stay out of git; the manifest is what is tracked.
+
+Each image is tagged at fetch time with how the sensor and the sun stood over it
+-- viewing zenith and azimuth, sun zenith and azimuth -- because the product is
+**orthorectified** and so carries no perspective of its own. What the viewing
+angle still costs you is relief displacement: anything standing above the ground
+leans away from the satellite by `height * tan(view_zenith)`, about 0.05 m per
+metre here. What the sun angle costs you is shadows, `height * tan(sun_zenith)`
+long, and clicking a shadow edge instead of the wall casting it is the easiest
+mistake to make at 10 m per pixel.
+
+## Marking points on them
+
+`fetch_images.py` writes an empty `<image>.points.yaml` beside each image as it
+downloads. You add labels and pixels; `annotate.py` fills in everything else and
+rewrites the file, comments included:
+
+```
+uv run --group images python scripts/annotate.py
+```
+
+```yaml
+points:
+  - label: "breakwater west end"
+    px: [212.5, 331.0]
+```
+
+It sorts what it writes into `measured` (read out of the product — the
+georeferencing and the acquisition angles), `inferred` (arithmetic on those
+angles: metres of lean and metres of shadow per metre of height), `estimated`
+(defensible defaults, chiefly the ±5 m a person places a hard edge to at 10 m per
+pixel), and `unavailable` — the satellite ephemeris, the tide on the day, the
+height of whatever stands at your point, and the camera-frame pixel that would
+make each of these a whole control point rather than half of one.
+
+Per point it derives `lonlat` and `en_m` from the pixel, and `alt_m` by sampling
+Copernicus DEM GLO-30. If the image is ever refetched from a different scene, or
+cropped to a different box, it refuses rather than reinterpreting your pixels
+against ground they were not read off.
+
+These files are committed — they are the labelling rather than the pixels.
+
 ## Where to start
 
 **`from_a_real_image.py`** is the place to start. Eight things you can identify
@@ -122,6 +174,7 @@ separable:
    national aerial imagery, whose licence you must check per country.
 
 `images/MANIFEST.yaml` records the provenance of anything placed in `images/` —
-source URL, licence, attribution and a checksum — and the images themselves are
-**not committed**, for licence reasons. Add an entry before adding a file, and
-keep the two in step.
+source URL, licence, attribution, acquisition geometry and a checksum. It is
+written by `fetch_images.py` rather than by hand, so adding an image means adding
+it to that script. The images themselves are **not committed**: Copernicus would
+permit it, but megabytes of binary do not belong in a library this size.

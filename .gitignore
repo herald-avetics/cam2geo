@@ -12,8 +12,11 @@ dist/
 build/
 *.egg-info/
 
-# Example imagery is fetched, never committed: the licences are not ours to
-# redistribute under. examples/images/MANIFEST.yaml records where each file
-# came from and is the only thing in there that is tracked.
+# Example imagery is fetched, never committed. Some of it we could ship --
+# Copernicus permits it -- but not all of it, and megabytes of binary do not
+# belong here either way. scripts/fetch_images.py downloads it and writes
+# examples/images/MANIFEST.yaml. The point files are hand-made and tracked: they
+# are the labelling, not the pixels, and they are useless if a re-fetch loses them.
 examples/images/*
 !examples/images/MANIFEST.yaml
+!examples/images/*.points.yaml

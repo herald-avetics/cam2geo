@@ -1,81 +1,98 @@
-# Provenance for every image used by an example.
-#
-# The images themselves are NOT committed -- this repository is MIT and cannot
-# redistribute third-party imagery whose terms it does not control. What is
-# committed is this file: where each image came from, under what licence, and a
-# checksum so a fetched copy can be shown to be the one described here.
-#
-# Add the entry before adding the file. `sha256` is of the bytes as served.
-#
-# Fields, all required:
-#   file         name under examples/images/
-#   description  what it shows, and why it is useful here
-#   source_url   the exact URL the bytes come from
-#   page_url     the human-readable page that states the terms
-#   licence      SPDX identifier where one exists, else the terms' own name
-#   attribution  the credit line the licence requires, verbatim
-#   redistribute true only if the licence permits us to ship the file itself
-#   retrieved    ISO date the URL was last confirmed
-#   sha256       checksum of the file as served
-#
-# For a georeferenced source (satellite or aerial imagery used to read off
-# control-point coordinates) also record:
-#   crs          coordinate reference system, e.g. EPSG:4326
-#   resolution_m ground sample distance of that product, in metres
-#
-# Anything marked `redistribute: false` must stay out of git. `.gitignore`
-# excludes this directory's contents apart from this file, so that is the
-# default and forgetting is safe.
+images:
+  - file: "camargue_salt_pans.tif"
+    description: "Camargue salt pans (salt_flat): evaporation-pond dykes, a geometric grid crisp at 10 m"
+    terrain: "salt_flat"
+    scene: "S2B_31TFJ_20240806_0_L2A"
+    acquired: "2024-08-06T10:38:56.986000Z"
+    cloud_cover_pct: 0.008
+    source_url: "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/31/T/FJ/2024/8/S2B_31TFJ_20240806_0_L2A/TCI.tif"
+    page_url: "https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice"
+    licence: "Copernicus Sentinel Data Legal Notice (EU law)"
+    attribution: "Contains modified Copernicus Sentinel data 2024"
+    redistribute: true
+    retrieved: "2026-09-17"
+    sha256: "b904d779642461cf432de192f69c3f28ae18f17690016a9b2bed7bb0f8930fbf"
+    crs: "EPSG:32631"
+    resolution_m: 10.0
+    size_px: [800, 800]
+    bbox: [636925.5, 4801595.4, 644925.5, 4809595.4]
+    platform: "sentinel-2b"
+    relative_orbit: "R108"
+    orthorectified: true
+    view_zenith_deg: 7.092
+    view_azimuth_deg: 106.315
+    sun_zenith_deg: 30.749
+    sun_azimuth_deg: 147.168
+  - file: "maasvlakte_container_terminal.tif"
+    description: "Maasvlakte container terminal (container_yard): quay edges and stack corners, straight lines at high contrast"
+    terrain: "container_yard"
+    scene: "S2B_31UET_20240812_0_L2A"
+    acquired: "2024-08-12T10:56:45.707000Z"
+    cloud_cover_pct: 0.014
+    source_url: "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/31/U/ET/2024/8/S2B_31UET_20240812_0_L2A/TCI.tif"
+    page_url: "https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice"
+    licence: "Copernicus Sentinel Data Legal Notice (EU law)"
+    attribution: "Contains modified Copernicus Sentinel data 2024"
+    redistribute: true
+    retrieved: "2026-09-17"
+    sha256: "2e0395e9cd05c50ccdbb165922542d1b4fb6db2ffcccbb4edd402e9eef313051"
+    crs: "EPSG:32631"
+    resolution_m: 10.0
+    size_px: [800, 800]
+    bbox: [568162.4, 5751997.8, 576162.4, 5759997.8]
+    platform: "sentinel-2b"
+    relative_orbit: "R051"
+    orthorectified: true
+    view_zenith_deg: 3.456
+    view_azimuth_deg: 124.641
+    sun_zenith_deg: 38.601
+    sun_azimuth_deg: 159.181
+  - file: "plymouth_sound_breakwater.tif"
+    description: "Plymouth Sound breakwater (sea): breakwater ends and fort walls, isolated and unambiguous"
+    terrain: "sea"
+    scene: "S2B_30UVA_20240602_0_L2A"
+    acquired: "2024-06-02T11:27:23.548000Z"
+    cloud_cover_pct: 0.14
+    source_url: "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/30/U/VA/2024/6/S2B_30UVA_20240602_0_L2A/TCI.tif"
+    page_url: "https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice"
+    licence: "Copernicus Sentinel Data Legal Notice (EU law)"
+    attribution: "Contains modified Copernicus Sentinel data 2024"
+    redistribute: true
+    retrieved: "2026-09-17"
+    sha256: "8cda72e0e3c5340e5acbe51f46ea042c6ad670bb1b2fd404d111b7b47e20b79d"
+    crs: "EPSG:32630"
+    resolution_m: 10.0
+    size_px: [800, 800]
+    bbox: [413437.7, 5571966.0, 421437.7, 5579966.0]
+    platform: "sentinel-2b"
+    relative_orbit: "R037"
+    orthorectified: true
+    view_zenith_deg: 3.028
+    view_azimuth_deg: 223.881
+    sun_zenith_deg: 29.159
+    sun_azimuth_deg: 158.156
 
-images: []
-
-# Verified licence terms for sources of ground-truth coordinates. An entry here
-# is a provider whose terms have been read first-hand, not a file. Adding an
-# image from one of these still needs its own `images:` entry with a checksum.
 ground_truth_sources:
-  - name: Copernicus Sentinel-2
-    page_url: https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice
-    licence: Copernicus Sentinel Data Legal Notice (EU law)
-    legal_basis: Regulation (EU) No 377/2014; Commission Delegated Regulation (EU) No 1159/2013
-    verified: 2026-09-14
-    resolution_m: 10
-    crs: EPSG:32630   # UTM zone varies with the scene
+  - name: "Copernicus Sentinel-2"
+    page_url: "https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice"
+    licence: "Copernicus Sentinel Data Legal Notice (EU law)"
+    legal_basis: "Regulation (EU) No 377/2014; Commission Delegated Regulation (EU) No 1159/2013"
+    verified: "2026-09-14"
+    resolution_m: 10.0
     redistribute: true
     commercial_use: true
     attribution: "Copernicus Sentinel data [Year]"
     attribution_if_modified: "Contains modified Copernicus Sentinel data [Year]"
-    # Art. 7 of Regulation 1159/2013 grants, in so far as lawful: reproduction,
-    # distribution, communication to the public, adaptation/modification and
-    # combination with other data, and any combination of those. Art. 8 sets the
-    # credit wording above. Arts. 3 and 9 disclaim all warranty, including
-    # suitability for purpose -- which for this library means the coordinates you
-    # read off it carry no accuracy guarantee whatsoever.
-    #
-    # CAVEAT, and it is the important one: 10 m per pixel. A control point picked
-    # off Sentinel-2 is good to perhaps half a pixel, so +/- 5 m -- which on a
-    # 200 m coastal scene would be the largest term in the whole error budget,
-    # swamping everything docs/LIMITATIONS.md prices. Fine for demonstrating the
-    # workflow; not a survey. For real control points use sub-metre national
-    # aerial imagery and check that country's licence separately.
-
-# Still to verify (WebSearch budget was exhausted before these were reached):
-#   - sub-metre open aerial imagery per country: USGS NAIP (US, ~0.6 m; usgs.gov
-#     blocks automated fetches, so read the terms by hand), and whatever the
-#     national equivalent is elsewhere.
-#   - a fixed-camera image with published intrinsics under a licence that permits
-#     redistribution. Expect non-commercial terms to dominate here; if none is
-#     found, the honest answer is that the user supplies their own image and this
-#     manifest records only what they fetched.
-
-# No real imagery is wired up yet; every example synthesises its pixels, which is
-# why they run anywhere with no downloads. The two halves a real example needs
-# are separable and have very different licence profiles:
-#
-#   1. A fixed camera's image. Intrinsics are a bonus, not a requirement --
-#      fit_homography needs none. Most computer-vision datasets that publish
-#      calibration are non-commercial, so check before adding one.
-#   2. Georeferenced imagery to read control-point coordinates from. Public
-#      domain and open options exist here; commercial basemap tiles (Google,
-#      Bing, Esri) generally forbid this use, so do not reach for them.
-#
-# See examples/README.md, "Using a real image".
+  - name: "Copernicus DEM GLO-30"
+    provides: "ground elevation, metres above the EGM2008 geoid"
+    page_url: "https://docs.sentinel-hub.com/api/latest/static/files/data/dem/resources/license/License-COPDEM-30.pdf"
+    licence: "Licence for Copernicus DEM instance COP-DEM-GLO-30-F Global 30m Full, Free & Open"
+    legal_basis: "Regulation (EU) No 377/2014; Commission Delegated Regulation (EU) No 1159/2013"
+    verified: "2026-09-17"
+    resolution_m: 30.0
+    model: "DSM, not DTM: buildings and vegetation are part of the surface"
+    redistribute: true
+    commercial_use: true
+    attribution: "© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
+    attribution_if_modified: "produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
+    liability_notice_required_on_distribution: "The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30"

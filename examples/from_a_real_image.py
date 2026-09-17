@@ -113,7 +113,7 @@ def main() -> None:
     parser.add_argument("--image", help="the camera frame the marks were clicked on")
     args = parser.parse_args()
 
-    print("Copernicus Sentinel data 2026 -- see examples/images/MANIFEST.yaml\n")
+    print("Copernicus Sentinel data 2024 -- see examples/images/MANIFEST.yaml\n")
     load_frame(args.image)
 
     marks = np.array(MARKS)
