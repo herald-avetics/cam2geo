@@ -117,14 +117,16 @@ def main() -> None:
     load_frame(args.image)
 
     marks = np.array(MARKS)
-    pixels, degrees = marks[:, :2], marks[:, 2:]
+    # GeodeticPlane is x latitude, y longitude; the table reads lon, lat,
+    # because that is the order a map browser shows them in.
+    pixels, degrees = marks[:, :2], marks[:, [3, 2]]
 
     # 1. The eight marks, as you would check them against the frame.
     print(f"{'#':>2}  {'feature':<21} {'column':>8} {'row':>7} "
           f"{'longitude':>11} {'latitude':>10}")
     for i, name in enumerate(NAMES):
         print(f"{i:>2}  {name:<21} {pixels[i, 0]:8.1f} {pixels[i, 1]:7.1f} "
-              f"{degrees[i, 0]:11.6f} {degrees[i, 1]:10.6f}")
+              f"{degrees[i, 1]:11.6f} {degrees[i, 0]:10.6f}")
 
     # 2. Fit. Least squares over every mark, NOT ransac -- see the comparison
     #    printed below, which is the reason.
@@ -156,7 +158,7 @@ def main() -> None:
     print("  handle. Use exact, and distrust a suspiciously small rms.")
 
     station = CameraStation(fit.homography,
-                            CameraPose(height_m=MAST_HEIGHT_M, x=LON0, y=LAT0),
+                            CameraPose(height_m=MAST_HEIGHT_M, x=LAT0, y=LON0),
                             name="headland")
 
     # 3. Place detections. Waterline at the bottom of the box, swell corrected.
@@ -177,7 +179,7 @@ def main() -> None:
                    else f"too coarse at {placed.ground_m_per_px[i]:.1f} m/px")
             print(f"{i:>4} {'--':>12} {'--':>11}   {why}")
             continue
-        print(f"{i:>4} {placed.x[i]:12.6f} {placed.y[i]:11.6f} "
+        print(f"{i:>4} {placed.y[i]:12.6f} {placed.x[i]:11.6f} "
               f"{budget.range_m[i]:9.0f} {placed.ground_m_per_px[i]:8.2f} "
               f"{budget.total_m[i]:8.1f}")
 
