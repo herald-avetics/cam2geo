@@ -35,7 +35,7 @@ dev = [
     "mypy>=1.10",
 ]
 docs = ["matplotlib>=3.8"]
-images = ["rasterio>=1.3", "pyyaml>=6.0"]
+images = ["rasterio>=1.3", "pyyaml>=6.0", "matplotlib>=3.8"]
 
 [build-system]
 requires = ["hatchling"]

@@ -189,10 +189,20 @@ Two invariants hold everywhere:
 
 ## Try it without a camera
 
-Three synthetic cameras, and every figure and table in the documentation is
-computed from them. They live in `docs/setups.py` rather than in the library,
-because nothing but the documentation needs them and a camera nobody has
-installed has no business shipping in a wheel.
+Three real Sentinel-2 scenes, a handful of marks clicked on each, and the whole
+path from pixel to coordinate drawn back onto the imagery:
+
+```
+uv run --group images python scripts/fetch_images.py
+uv run --all-extras --group images python scripts/project_points.py
+```
+
+That writes annotated PNGs to `output/`, and prints how far the fitted
+homography drifts from the scene's own georeferencing at pixels it was never
+fitted on — which is the only number in the exercise that means anything.
+
+The three synthetic cameras every figure and table in the documentation is
+computed from are in `docs/setups.py`. They are documentation, not library.
 
 ## Documentation
 

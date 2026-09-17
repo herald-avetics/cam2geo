@@ -131,6 +131,8 @@ docs = [
     { name = "matplotlib", version = "3.11.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
 images = [
+    { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "matplotlib", version = "3.11.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pyyaml" },
     { name = "rasterio", version = "1.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "rasterio", version = "1.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -156,6 +158,7 @@ dev = [
 ]
 docs = [{ name = "matplotlib", specifier = ">=3.8" }]
 images = [
+    { name = "matplotlib", specifier = ">=3.8" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rasterio", specifier = ">=1.3" },
 ]

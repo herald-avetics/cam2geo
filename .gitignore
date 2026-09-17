@@ -20,3 +20,7 @@ build/
 examples/images/*
 !examples/images/MANIFEST.yaml
 !examples/images/*.points.yaml
+
+# Rendered by scripts/project_points.py from the imagery above, so it inherits
+# the same reason for staying out.
+output/
